@@ -33,10 +33,10 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/klauspost/compress/zstd"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/kc/pkg/twx"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/olekukonko/tablewriter"
 )
 
 var supportTopRPCFlags = []cli.Flag{
@@ -271,19 +271,8 @@ func (m *topRPCUI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *topRPCUI) View() string {
 	var s strings.Builder
 	// Set table header
-	table := tablewriter.NewWriter(&s)
-	table.SetAutoWrapText(false)
-	table.SetAutoFormatHeaders(false)
-	table.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
-	table.SetAlignment(tablewriter.ALIGN_CENTER)
-	table.SetCenterSeparator("")
-	table.SetColumnSeparator("")
-	table.SetRowSeparator("")
-	table.SetHeaderLine(false)
-	table.SetBorder(false)
-	table.SetTablePadding("\t") // pad with tabs
-	table.SetNoWhiteSpace(true)
-	table.SetHeader([]string{"SERVER", "CONCTD", "PING", "PONG", "OUT.Q", "RECONNS", "STR.IN", "STR.OUT", "MSG.IN", "MSG.OUT"})
+	table := twx.NewTable(&s)
+	table.Header([]string{"SERVER", "CONCTD", "PING", "PONG", "OUT.Q", "RECONNS", "STR.IN", "STR.OUT", "MSG.IN", "MSG.OUT"})
 
 	rpc := m.curr.Aggregated.RPC
 	byhost := m.curr.ByHost
@@ -431,7 +420,7 @@ func (m *topRPCUI) View() string {
 	if !m.showTo {
 		dir = "FROM"
 	}
-	table.AppendBulk(dataRender)
+	table.Bulk(dataRender)
 	table.Render()
 	pre := "\n"
 	if m.frozen != nil {

@@ -30,10 +30,10 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/kc/pkg/twx"
 	"github.com/minio/cli"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/pkg/v3/console"
-	"github.com/olekukonko/tablewriter"
 )
 
 var adminReplicateResyncStatusCmd = cli.Command{
@@ -192,18 +192,7 @@ func (m *resyncMetricsUI) View() string {
 	var s strings.Builder
 
 	// Set table header
-	table := tablewriter.NewWriter(&s)
-	table.SetAutoWrapText(false)
-	table.SetAutoFormatHeaders(true)
-	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.SetCenterSeparator("")
-	table.SetColumnSeparator("")
-	table.SetRowSeparator("")
-	table.SetHeaderLine(false)
-	table.SetBorder(false)
-	table.SetTablePadding("\t") // pad with tabs
-	table.SetNoWhiteSpace(true)
+	table := twx.NewTable(&s)
 
 	var data [][]string
 	addLine := func(prefix string, value any) {
@@ -243,7 +232,8 @@ func (m *resyncMetricsUI) View() string {
 		addLine("Elapsed: ", accElapsedTime.String())
 		addLine("CurrObjName: ", fmt.Sprintf("%s/%s", m.current.Bucket, m.current.Object))
 	}
-	table.AppendBulk(data)
+
+	table.Bulk(data)
 	table.Render()
 
 	if m.quitting {
