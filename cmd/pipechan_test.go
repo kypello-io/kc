@@ -22,7 +22,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/rjeczalik/notify"
+	"github.com/syncthing/notify"
 )
 
 func testPipeChan(inputCh, outputCh chan notify.EventInfo, totalMsgs int) error {
