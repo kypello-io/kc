@@ -23,10 +23,10 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/kc/pkg/twx"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/olekukonko/tablewriter"
 )
 
 var batchListFlags = []cli.Flag{
@@ -78,21 +78,10 @@ func (c batchListMessage) String() string {
 	var s strings.Builder
 
 	// Set table header
-	table := tablewriter.NewWriter(&s)
-	table.SetAutoWrapText(false)
-	table.SetAutoFormatHeaders(true)
-	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.SetCenterSeparator("")
-	table.SetColumnSeparator("")
-	table.SetRowSeparator("")
-	table.SetHeaderLine(false)
-	table.SetBorder(false)
-	table.SetTablePadding("\t") // pad with tabs
-	table.SetNoWhiteSpace(true)
+	table := twx.NewTable(&s)
 
 	// Add a new "STATUS" column to the table header
-	table.SetHeader([]string{"ID", "TYPE", "USER", "STARTED", "STATUS"})
+	table.Header([]string{"ID", "TYPE", "USER", "STARTED", "STATUS"})
 	data := make([][]string, 0, 5)
 
 	// Fetch the status for the batch job using BatchJobStatus API
@@ -123,7 +112,7 @@ func (c batchListMessage) String() string {
 		})
 	}
 
-	table.AppendBulk(data)
+	table.Bulk(data)
 	table.Render()
 
 	return s.String()

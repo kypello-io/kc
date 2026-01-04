@@ -28,8 +28,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/dustin/go-humanize"
+	"github.com/kypello-io/kc/pkg/twx"
 	"github.com/minio/madmin-go/v3"
-	"github.com/olekukonko/tablewriter"
 	"github.com/prometheus/procfs"
 )
 
@@ -95,19 +95,8 @@ func (m *topNetUI) calculationRate(prev, curr uint64, dur time.Duration) uint64 
 func (m *topNetUI) View() string {
 	var s strings.Builder
 	// Set table header
-	table := tablewriter.NewWriter(&s)
-	table.SetAutoWrapText(false)
-	table.SetAutoFormatHeaders(true)
-	table.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
-	table.SetAlignment(tablewriter.ALIGN_CENTER)
-	table.SetCenterSeparator("")
-	table.SetColumnSeparator("")
-	table.SetRowSeparator("")
-	table.SetHeaderLine(false)
-	table.SetBorder(false)
-	table.SetTablePadding("\t") // pad with tabs
-	table.SetNoWhiteSpace(true)
-	table.SetHeader([]string{"SERVER", "INTERFACE", "RECEIVE", "TRANSMIT", ""})
+	table := twx.NewTable(&s)
+	table.Header([]string{"SERVER", "INTERFACE", "RECEIVE", "TRANSMIT", ""})
 
 	data := make([]topNetResult, 0, len(m.currTopMap))
 
@@ -157,7 +146,7 @@ func (m *topNetUI) View() string {
 		}
 	}
 
-	table.AppendBulk(dataRender)
+	table.Bulk(dataRender)
 	table.Render()
 	return s.String()
 }

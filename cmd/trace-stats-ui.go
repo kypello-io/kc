@@ -30,10 +30,10 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
+	"github.com/kypello-io/kc/pkg/twx"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/pkg/v3/console"
 	"github.com/muesli/reflow/truncate"
-	"github.com/olekukonko/tablewriter"
 	"golang.org/x/term"
 )
 
@@ -99,18 +99,7 @@ func (m *traceStatsUI) View() string {
 
 	// Set table header - akin to k8s style
 	// https://github.com/olekukonko/tablewriter#example-10---set-nowhitespace-and-tablepadding-option
-	table := tablewriter.NewWriter(&s)
-	table.SetAutoWrapText(false)
-	table.SetAutoFormatHeaders(true)
-	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.SetCenterSeparator("")
-	table.SetColumnSeparator("")
-	table.SetRowSeparator("")
-	table.SetHeaderLine(false)
-	table.SetBorder(false)
-	table.SetTablePadding("  ") // pad with tabs
-	table.SetNoWhiteSpace(true)
+	table := twx.NewTable(&s)
 	var entries []statItem
 
 	m.current.mu.Lock()

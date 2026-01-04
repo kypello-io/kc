@@ -26,8 +26,8 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/kypello-io/kc/pkg/twx"
 	"github.com/minio/madmin-go/v3"
-	"github.com/olekukonko/tablewriter"
 )
 
 type topDriveUI struct {
@@ -236,20 +236,9 @@ func (m *topDriveUI) View() string {
 	s.WriteString("\n")
 
 	// Set table header
-	table := tablewriter.NewWriter(&s)
-	table.SetAutoWrapText(false)
-	table.SetAutoFormatHeaders(true)
-	table.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
-	table.SetAlignment(tablewriter.ALIGN_CENTER)
-	table.SetCenterSeparator("")
-	table.SetColumnSeparator("")
-	table.SetRowSeparator("")
-	table.SetHeaderLine(false)
-	table.SetBorder(false)
-	table.SetTablePadding("\t") // pad with tabs
-	table.SetNoWhiteSpace(true)
+	table := twx.NewTable(&s)
 
-	table.SetHeader([]string{"Drive", "used", "tps", "read", "write", "discard", "await", "util"})
+	table.Header([]string{"Drive", "used", "tps", "read", "write", "discard", "await", "util"})
 
 	var data []driveIOStat
 
@@ -293,7 +282,7 @@ func (m *topDriveUI) View() string {
 		})
 	}
 
-	table.AppendBulk(dataRender)
+	table.Bulk(dataRender)
 	table.Render()
 
 	if !m.quitting {
