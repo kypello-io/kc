@@ -34,10 +34,10 @@ import (
 	"github.com/fatih/color"
 	"github.com/klauspost/compress/gzip"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/pkg/v3/console"
 )
 
 const (
@@ -64,7 +64,7 @@ var supportDiagFlags = append([]cli.Flag{
 		Usage: "Data anonymization mode (standard|strict)",
 		Value: anonymizeStandard,
 	},
-}, subnetCommonFlags...)
+}, supportGlobalFlags...)
 
 var supportDiagCmd = cli.Command{
 	Name:         "diag",
@@ -93,21 +93,6 @@ EXAMPLES:
   3. Upload MinIO diagnostics report for cluster with alias 'myminio' to SUBNET, with strict anonymization
      {{.Prompt}} {{.HelpName}} myminio --anonymize=strict
 `,
-}
-
-type supportDiagMessage struct {
-	Status string `json:"status"`
-}
-
-// String colorized status message
-func (s supportDiagMessage) String() string {
-	return console.Colorize(supportSuccessMsgTag, "MinIO diagnostics report was successfully uploaded to SUBNET.")
-}
-
-// JSON jsonified status message
-func (s supportDiagMessage) JSON() string {
-	s.Status = "success"
-	return toJSON(s)
 }
 
 // checkSupportDiagSyntax - validate arguments passed by a user
@@ -195,33 +180,21 @@ func mainSupportDiag(ctx *cli.Context) error {
 
 	// Get the alias parameter from cli
 	aliasedURL := ctx.Args().Get(0)
-	alias, apiKey := initSubnetConnectivity(ctx, aliasedURL, true)
-	if len(apiKey) == 0 {
-		// api key not passed as flag. Check that the cluster is registered.
-		apiKey = validateClusterRegistered(alias, true)
-	}
+	alias, _ := url2Alias(aliasedURL)
 
 	// Create a new MinIO Admin Client
 	client := getClient(aliasedURL)
 
 	// Main execution
-	execSupportDiag(ctx, client, alias, apiKey)
+	execSupportDiag(ctx, client, alias)
 
 	return nil
 }
 
-func execSupportDiag(ctx *cli.Context, client *madmin.AdminClient, alias, apiKey string) {
-	var reqURL string
-	var headers map[string]string
+func execSupportDiag(ctx *cli.Context, client *madmin.AdminClient, alias string) {
 	setSuccessMessageColor()
 
 	filename := fmt.Sprintf("%s-health_%s.json.gz", filepath.Clean(alias), UTCNow().Format("20060102150405"))
-	if !globalAirgapped {
-		// Retrieve subnet credentials (login/license) beforehand as
-		// it can take a long time to fetch the health information
-		uploadURL := SubnetUploadURL("health")
-		reqURL, headers = prepareSubnetUploadURL(uploadURL, alias, apiKey)
-	}
 
 	healthInfo, version, e := fetchServerDiagInfo(ctx, client)
 	fatalIf(probe.NewError(e), "Unable to fetch health information.")
@@ -240,19 +213,6 @@ func execSupportDiag(ctx *cli.Context, client *madmin.AdminClient, alias, apiKey
 
 	e = tarGZ(healthInfo, version, filename)
 	fatalIf(probe.NewError(e), "Unable to save MinIO diagnostics report")
-
-	if !globalAirgapped {
-		_, e = (&SubnetFileUploader{
-			alias:             alias,
-			FilePath:          filename,
-			ReqURL:            reqURL,
-			Headers:           headers,
-			DeleteAfterUpload: true,
-		}).UploadFileToSubnet()
-		fatalIf(probe.NewError(e), "Unable to upload MinIO diagnostics report to SUBNET portal")
-
-		printMsg(supportDiagMessage{})
-	}
 }
 
 func fetchServerDiagInfo(ctx *cli.Context, client *madmin.AdminClient) (any, string, error) {

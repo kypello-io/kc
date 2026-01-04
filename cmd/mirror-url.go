@@ -26,9 +26,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kypello-io/pkg/v3/wildcard"
 	"github.com/minio/cli"
 	"github.com/minio/minio-go/v7"
-	"github.com/minio/pkg/v3/wildcard"
 )
 
 //

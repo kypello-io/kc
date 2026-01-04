@@ -25,7 +25,6 @@ import (
 	"net"
 	"net/http"
 	"net/netip"
-	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -33,9 +32,8 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/dustin/go-humanize"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
-	"github.com/minio/madmin-go/v3"
-	"github.com/minio/pkg/v3/console"
 	"github.com/muesli/termenv"
 	"golang.org/x/net/http/httpguts"
 )
@@ -69,24 +67,20 @@ const (
 )
 
 var (
-	globalQuiet        = false               // Quiet flag set via command line
-	globalJSON         = false               // Json flag set via command line
-	globalJSONLine     = false               // Print json as single line.
-	globalDebug        = false               // Debug flag set via command line
-	globalNoColor      = false               // No Color flag set via command line
-	globalInsecure     = false               // Insecure flag set via command line
-	globalResolvers    map[string]netip.Addr // Custom mappings from HOST[:PORT] to IP
-	globalAirgapped    = false               // Airgapped flag set via command line
-	globalSubnetConfig []madmin.SubsysConfig // Subnet config
+	globalQuiet     = false               // Quiet flag set via command line
+	globalJSON      = false               // Json flag set via command line
+	globalJSONLine  = false               // Print json as single line.
+	globalDebug     = false               // Debug flag set via command line
+	globalNoColor   = false               // No Color flag set via command line
+	globalInsecure  = false               // Insecure flag set via command line
+	globalResolvers map[string]netip.Addr // Custom mappings from HOST[:PORT] to IP
+	globalAirgapped = false               // Airgapped flag set via command line
 
 	// GlobalDevMode is set to true if the program is running in development mode
 	GlobalDevMode = false
 
 	// GlobalTrapSignals is set to true if need to trap the registered signals and cancel the global context.
 	GlobalTrapSignals = true
-
-	// GlobalSubnetProxyURL is the proxy to be used for communication with subnet
-	GlobalSubnetProxyURL *url.URL
 
 	globalConnReadDeadline  time.Duration
 	globalConnWriteDeadline time.Duration

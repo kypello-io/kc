@@ -22,9 +22,9 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/kypello-io/pkg/v3/console"
+	"github.com/kypello-io/pkg/v3/env"
 	"github.com/minio/cli"
-	"github.com/minio/pkg/v3/console"
-	"github.com/minio/pkg/v3/env"
 
 	"github.com/fatih/color"
 )

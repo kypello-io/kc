@@ -19,9 +19,9 @@ package cmd
 
 import (
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/pkg/v3/console"
 )
 
 //   Configure an alias in MinIO Client

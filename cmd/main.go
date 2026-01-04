@@ -35,13 +35,13 @@ import (
 
 	"github.com/inconshreveable/mousetrap"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
+	"github.com/kypello-io/pkg/v3/env"
+	"github.com/kypello-io/pkg/v3/trie"
+	"github.com/kypello-io/pkg/v3/words"
 	"github.com/minio/cli"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/pkg/v3/console"
-	"github.com/minio/pkg/v3/env"
-	"github.com/minio/pkg/v3/trie"
-	"github.com/minio/pkg/v3/words"
 	"golang.org/x/term"
 
 	completeinstall "github.com/posener/complete/cmd/install"

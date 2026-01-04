@@ -25,10 +25,10 @@ import (
 	"time"
 
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/pkg/v3/console"
 )
 
 // profile command flags.
@@ -44,7 +44,7 @@ var (
 			Usage: "profiler type, possible values are 'cpu', 'cpuio', 'mem', 'block', 'mutex', 'trace', 'threads', 'goroutines' and 'runtime'",
 			Value: "cpu,mem,goroutines,runtime",
 		},
-	}, subnetCommonFlags...)
+	}, supportGlobalFlags...)
 )
 
 const profileFile = "profile.zip"
@@ -205,32 +205,19 @@ func mainSupportProfile(ctx *cli.Context) error {
 
 	// Get the alias parameter from cli
 	aliasedURL := ctx.Args().Get(0)
-	alias, apiKey := initSubnetConnectivity(ctx, aliasedURL, true)
-	if len(apiKey) == 0 {
-		// api key not passed as flag. Check that the cluster is registered.
-		apiKey = validateClusterRegistered(alias, true)
-	}
+	alias, _ := url2Alias(aliasedURL)
 
 	// Create a new MinIO Admin Client
 	client := getClient(aliasedURL)
 
 	// Main execution
-	execSupportProfile(ctx, client, alias, apiKey)
+	execSupportProfile(ctx, client, alias)
 	return nil
 }
 
-func execSupportProfile(ctx *cli.Context, client *madmin.AdminClient, alias, apiKey string) {
-	var reqURL string
-	var headers map[string]string
+func execSupportProfile(ctx *cli.Context, client *madmin.AdminClient, alias string) {
 	profilers := ctx.String("type")
 	duration := ctx.Int("duration")
-
-	if !globalAirgapped {
-		// Retrieve subnet credentials (login/license) beforehand as
-		// it can take a long time to fetch the profile data
-		uploadURL := SubnetUploadURL("profile")
-		reqURL, headers = prepareSubnetUploadURL(uploadURL, alias, apiKey)
-	}
 
 	if !globalJSON {
 		console.Infof("Profiling '%s' for %d seconds... \n", alias, duration)
@@ -240,29 +227,8 @@ func execSupportProfile(ctx *cli.Context, client *madmin.AdminClient, alias, api
 
 	saveProfileFile(data)
 
-	if !globalAirgapped {
-		_, e = (&SubnetFileUploader{
-			alias:             alias,
-			FilePath:          profileFile,
-			ReqURL:            reqURL,
-			Headers:           headers,
-			DeleteAfterUpload: true,
-		}).UploadFileToSubnet()
-		if e != nil {
-			printMsg(supportProfileMessage{
-				Status: "error",
-				Error:  e.Error(),
-				File:   profileFile,
-			})
-			return
-		}
-		printMsg(supportProfileMessage{
-			Status: "success",
-		})
-	} else {
-		printMsg(supportProfileMessage{
-			Status: "success",
-			File:   profileFile,
-		})
-	}
+	printMsg(supportProfileMessage{
+		Status: "success",
+		File:   profileFile,
+	})
 }

@@ -29,13 +29,13 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/lifecycle"
 	"github.com/minio/minio-go/v7/pkg/notification"
 	"github.com/minio/minio-go/v7/pkg/replication"
-	"github.com/minio/pkg/v3/console"
 )
 
 // contentMessage container for content message structure.

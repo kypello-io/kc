@@ -24,9 +24,9 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/pkg/v3/console"
 )
 
 var adminUserSvcAcctSetFlags = []cli.Flag{

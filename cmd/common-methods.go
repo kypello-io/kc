@@ -35,10 +35,10 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/env"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/encrypt"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/pkg/v3/env"
 )
 
 // Check if the passed URL represents a folder. It may or may not exist yet.

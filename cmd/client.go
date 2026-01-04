@@ -34,13 +34,13 @@ import (
 	"github.com/kypello-io/kc/pkg/httptracer"
 	"github.com/kypello-io/kc/pkg/limiter"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/env"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/cors"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/encrypt"
 	"github.com/minio/minio-go/v7/pkg/lifecycle"
 	"github.com/minio/minio-go/v7/pkg/replication"
-	"github.com/minio/pkg/v3/env"
 )
 
 // DirOpt - list directory option.

@@ -22,7 +22,7 @@ import (
 	"path/filepath"
 
 	"github.com/kypello-io/kc/pkg/probe"
-	"github.com/minio/pkg/v3/certs"
+	"github.com/kypello-io/pkg/v3/certs"
 )
 
 // getCertsDir - return the full path of certs dir

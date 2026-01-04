@@ -41,6 +41,7 @@ import (
 	"github.com/kypello-io/kc/pkg/disk"
 	"github.com/kypello-io/kc/pkg/hookreader"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
 	xfilepath "github.com/minio/filepath"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/cors"
@@ -48,7 +49,6 @@ import (
 	"github.com/minio/minio-go/v7/pkg/lifecycle"
 	"github.com/minio/minio-go/v7/pkg/notification"
 	"github.com/minio/minio-go/v7/pkg/replication"
-	"github.com/minio/pkg/v3/console"
 )
 
 // filesystem client

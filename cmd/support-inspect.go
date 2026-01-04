@@ -19,7 +19,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
@@ -35,18 +34,14 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/madmin-go/v3/estream"
-	"github.com/minio/pkg/v3/console"
 )
 
-const (
-	defaultPublicKey = "MIIBCgKCAQEAs/128UFS9A8YSJY1XqYKt06dLVQQCGDee69T+0Tip/1jGAB4z0/3QMpH0MiS8Wjs4BRWV51qvkfAHzwwdU7y6jxU05ctb/H/WzRj3FYdhhHKdzear9TLJftlTs+xwj2XaADjbLXCV1jGLS889A7f7z5DgABlVZMQd9BjVAR8ED3xRJ2/ZCNuQVJ+A8r7TYPGMY3wWvhhPgPk3Lx4WDZxDiDNlFs4GQSaESSsiVTb9vyGe/94CsCTM6Cw9QG6ifHKCa/rFszPYdKCabAfHcS3eTr0GM+TThSsxO7KfuscbmLJkfQev1srfL2Ii2RbnysqIJVWKEwdW05ID8ryPkuTuwIDAQAB"
-)
-
-var supportInspectFlags = append(subnetCommonFlags,
+var supportInspectFlags = append(supportGlobalFlags,
 	cli.BoolFlag{
 		Name:  "legacy",
 		Usage: "use the older inspect format",
@@ -133,12 +128,6 @@ func mainSupportInspect(ctx *cli.Context) error {
 	args := ctx.Args()
 	aliasedURL := args.Get(0)
 
-	alias, apiKey := initSubnetConnectivity(ctx, aliasedURL, true)
-	if len(apiKey) == 0 {
-		// api key not passed as flag. Check that the cluster is registered.
-		apiKey = validateClusterRegistered(alias, true)
-	}
-
 	console.SetColor("File", color.New(color.FgWhite, color.Bold))
 	console.SetColor("Key", color.New(color.FgHiRed, color.Bold))
 
@@ -159,29 +148,9 @@ func mainSupportInspect(ctx *cli.Context) error {
 		console.Infoln("Your shell is auto determined as '" + shellName + "', wildcard patterns are only supported with 'bash' SHELL.")
 	}
 
-	var publicKey []byte
-	if !ctx.Bool("legacy") {
-		var e error
-		publicKey, e = os.ReadFile(filepath.Join(mustGetMcConfigDir(), "support_public.pem"))
-		if e != nil && !os.IsNotExist(e) {
-			fatalIf(probe.NewError(e).Trace(aliasedURL), "Unable to inspect file.")
-		} else if len(publicKey) > 0 {
-			if !globalJSON && !globalQuiet {
-				console.Infoln("Using public key from ", filepath.Join(mustGetMcConfigDir(), "support_public.pem"))
-			}
-		}
-
-		// Fall back to MinIO public key.
-		if len(publicKey) == 0 {
-			// Public key for MinIO confidential information.
-			publicKey, _ = base64.StdEncoding.DecodeString(defaultPublicKey)
-		}
-	}
-
 	key, r, e := client.Inspect(context.Background(), madmin.InspectOptions{
-		Volume:    bucket,
-		File:      prefix,
-		PublicKey: publicKey,
+		Volume: bucket,
+		File:   prefix,
 	})
 	fatalIf(probe.NewError(e).Trace(aliasedURL), "Unable to inspect file.")
 
@@ -240,30 +209,9 @@ func mainSupportInspect(ctx *cli.Context) error {
 	r.Close()
 	tmpFile.Close()
 	wantFileName := "inspect-" + conservativeFileName(strings.Join(splits, "_")) + ".enc"
-	if globalAirgapped {
-		saveInspectDataFile(wantFileName, key, tmpFile)
-		return nil
-	}
 
-	uploadURL := SubnetUploadURL("inspect")
-	reqURL, headers := prepareSubnetUploadURL(uploadURL, alias, apiKey)
-
-	tmpFileName := tmpFile.Name()
-	_, e = (&SubnetFileUploader{
-		alias:             alias,
-		FilePath:          tmpFileName,
-		filename:          wantFileName,
-		ReqURL:            reqURL,
-		Headers:           headers,
-		DeleteAfterUpload: true,
-	}).UploadFileToSubnet()
-	if e != nil {
-		console.Errorln("Unable to upload inspect data to SUBNET portal: " + e.Error())
-		saveInspectDataFile(wantFileName, key, tmpFile)
-		return nil
-	}
-
-	printMsg(inspectMessage{AliasedURL: aliasedURL})
+	// globalAirgapped
+	saveInspectDataFile(wantFileName, key, tmpFile)
 	return nil
 }
 

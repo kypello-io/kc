@@ -18,8 +18,8 @@
 package cmd
 
 import (
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
-	"github.com/minio/pkg/v3/console"
 )
 
 var policyFlags = []cli.Flag{
