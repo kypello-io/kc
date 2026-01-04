@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+	"math"
 
 	"github.com/kypello-io/kc/pkg/probe"
 	json "github.com/minio/colorjson"
@@ -112,6 +113,10 @@ func (m retentionBucketMessage) JSON() string {
 func getRetainUntilDate(validity uint64, unit minio.ValidityUnit) (string, *probe.Error) {
 	if validity == 0 {
 		return "", probe.NewError(fmt.Errorf("invalid validity '%v'", validity))
+	}
+	// Ensure validity fits into an int before converting, to avoid overflow on 32-bit platforms.
+	if validity > uint64(math.MaxInt) {
+		return "", probe.NewError(fmt.Errorf("validity '%v' exceeds maximum supported value", validity))
 	}
 	t := UTCNow()
 	if unit == minio.Years {
