@@ -23,7 +23,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cheggaaa/pb"
+	"github.com/cheggaaa/pb/v3"
 	"github.com/fatih/color"
 	"github.com/minio/pkg/v3/console"
 )
@@ -31,6 +31,7 @@ import (
 // progress extender.
 type progressBar struct {
 	*pb.ProgressBar
+	proxyReader *pb.Reader
 }
 
 func newPB(total int64) *pb.ProgressBar {
@@ -41,34 +42,21 @@ func newPB(total int64) *pb.ProgressBar {
 	bar := pb.New64(total)
 
 	// Set new human friendly print units.
-	bar.SetUnits(pb.U_BYTES)
-
+	bar.Set(pb.Bytes, true)
 	// Refresh rate for progress bar is set to 125 milliseconds.
 	bar.SetRefreshRate(time.Millisecond * 125)
 
-	// Do not print a newline by default handled, it is handled manually.
-	bar.NotPrint = true
-
-	// Show current speed is true.
-	bar.ShowSpeed = true
-
-	// Custom callback with colorized bar.
-	bar.Callback = func(s string) {
-		console.Print(console.Colorize("Bar", "\r"+s))
-	}
-
 	// Use different unicodes for Linux, OS X and Windows.
+	var template string
 	switch runtime.GOOS {
 	case "linux":
-		// Need to add '\x00' as delimiter for unicode characters.
-		bar.Format("┃\x00▓\x00█\x00░\x00┃")
+		template = `{{string . "prefix"}} {{counters . }} {{bar . "┃" "▓" "█" "░" "┃"}} {{speed . | green}} {{percent . }}`
 	case "darwin":
-		// Need to add '\x00' as delimiter for unicode characters.
-		bar.Format(" \x00▓\x00 \x00░\x00 ")
+		template = `{{string . "prefix"}} {{counters . }} {{bar . " " "▓" " " "░" " "}} {{speed . | green}} {{percent . }}`
 	default:
-		// Default to non unicode characters.
-		bar.Format("[=> ]")
+		template = `{{string . "prefix"}} {{counters . }} {{bar . "[" "=" ">" " " "]"}} {{speed . | green}} {{percent . }}`
 	}
+	bar.SetTemplateString(template)
 
 	// Start the progress bar.
 	return bar.Start()
@@ -78,7 +66,7 @@ func newProgressReader(r io.Reader, caption string, total int64) *pb.Reader {
 	bar := newPB(total)
 
 	if caption != "" {
-		bar.Prefix(caption)
+		bar.Set("prefix", caption)
 	}
 
 	return bar.NewProxyReader(r)
@@ -88,14 +76,17 @@ func newProgressReader(r io.Reader, caption string, total int64) *pb.Reader {
 func newProgressBar(total int64) *progressBar {
 	bar := newPB(total)
 
+	// Create a proxy reader for nil reader to support Read() method
+	reader := bar.NewProxyReader(nil)
+
 	// Return new progress bar here.
-	return &progressBar{ProgressBar: bar}
+	return &progressBar{ProgressBar: bar, proxyReader: reader}
 }
 
 // Set caption.
 func (p *progressBar) SetCaption(caption string) *progressBar {
-	caption = fixateBarCaption(caption, getFixedWidth(p.GetWidth(), 18))
-	p.Prefix(caption)
+	caption = fixateBarCaption(caption, getFixedWidth(p.Width(), 18))
+	p.ProgressBar.Set("prefix", caption)
 	return p
 }
 
@@ -104,23 +95,47 @@ func (p *progressBar) Finish() {
 }
 
 func (p *progressBar) Set64(length int64) *progressBar {
-	p.ProgressBar = p.ProgressBar.Set64(length)
+	p.SetCurrent(length)
 	return p
 }
 
-func (p *progressBar) Read(buf []byte) (n int, err error) {
-	defer func() {
-		// Upload retry can read one object twice; Avoid read to be greater than Total
-		if n, t := p.Get(), p.Total; t > 0 && n > t {
-			p.ProgressBar.Set64(t)
-		}
-	}()
+func (p *progressBar) Get() int64 {
+	return p.Current()
+}
 
-	return p.ProgressBar.Read(buf)
+func (p *progressBar) Read(buf []byte) (n int, err error) {
+	n, err = p.proxyReader.Read(buf)
+	if err != nil {
+		return
+	}
+
+	// Upload retry can read one object twice; Avoid read to be greater than Total
+	if t := p.Total(); t > 0 && int64(n) > t {
+		p.SetCurrent(t)
+	}
+
+	return
 }
 
 func (p *progressBar) SetTotal(total int64) {
-	p.Total = total
+	p.ProgressBar.SetTotal(total)
+}
+
+// Write implements io.Writer interface for compatibility with v1 API
+func (p *progressBar) Write(buf []byte) (n int, err error) {
+	n = len(buf)
+	p.Add64(int64(n))
+	return
+}
+
+// Update is a no-op in v3, kept for compatibility
+func (p *progressBar) Update() {
+	// v3 updates automatically through templates
+}
+
+// Set sets the current progress (compatibility with v1)
+func (p *progressBar) Set(current int64) {
+	p.SetCurrent(current)
 }
 
 // cursorAnimate - returns a animated rune through read channel for every read.

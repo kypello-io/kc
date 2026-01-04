@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cheggaaa/pb"
+	"github.com/cheggaaa/pb/v3/termutil"
 	humanize "github.com/dustin/go-humanize"
 )
 
@@ -64,7 +64,8 @@ func colorizeUpdateMessage(updateString, newerThan string) string {
 	// termWidth is set to a default one to use when we are
 	// not able to calculate terminal width via OS syscalls
 	termWidth := 25
-	if width, err := pb.GetTerminalWidth(); err == nil {
+
+	if width, err := termutil.TerminalWidth(); err == nil {
 		termWidth = width
 	}
 
