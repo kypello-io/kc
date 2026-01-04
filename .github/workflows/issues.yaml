@@ -14,5 +14,7 @@ jobs:
     steps:
       - uses: actions/add-to-project@v1.0.2
         with:
-          project-url: https://github.com/orgs/miniohq/projects/2
+          project-url: https://github.com/orgs/kypello-io/projects/2
           github-token: ${{ secrets.BOT_PAT }}
+          labeled: bug, needs-triage
+          label-operator: OR
