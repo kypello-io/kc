@@ -21,7 +21,7 @@ package cmd
 
 import (
 	"github.com/pkg/xattr"
-	"github.com/rjeczalik/notify"
+	"github.com/syncthing/notify"
 )
 
 var (

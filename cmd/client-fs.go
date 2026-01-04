@@ -36,7 +36,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/pkg/xattr"
-	"github.com/rjeczalik/notify"
+	"github.com/syncthing/notify"
 
 	"github.com/kypello-io/kc/pkg/disk"
 	"github.com/kypello-io/kc/pkg/hookreader"

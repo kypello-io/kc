@@ -17,7 +17,7 @@
 
 package cmd
 
-import "github.com/rjeczalik/notify"
+import "github.com/syncthing/notify"
 
 // Dynamically sized logical channel: a pipe which never blocks even when
 // it receives too many elements. Memory consumption is increased and decresed
