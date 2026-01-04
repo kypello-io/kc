@@ -39,8 +39,8 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/pkg/xattr v0.4.10
 	github.com/posener/complete v1.2.3
-	github.com/prometheus/client_golang v1.21.1
-	github.com/prometheus/procfs v0.16.0
+	github.com/prometheus/client_golang v1.23.2
+	github.com/prometheus/procfs v0.16.1
 	github.com/rjeczalik/notify v0.9.3
 	github.com/rs/xid v1.6.0
 	github.com/shirou/gopsutil/v3 v3.24.5
@@ -220,7 +220,7 @@ require (
 	github.com/polyfloyd/go-errorlint v1.8.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
-	github.com/prometheus/common v0.63.0 // indirect
+	github.com/prometheus/common v0.66.1 // indirect
 	github.com/prometheus/prom2json v1.4.2 // indirect
 	github.com/prometheus/prometheus v0.303.0 // indirect
 	github.com/quasilyte/go-ruleguard v0.4.5 // indirect
@@ -288,6 +288,7 @@ require (
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
+	go.yaml.in/yaml/v2 v2.4.2 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20251023183803-a4bb9ffd2546 // indirect
