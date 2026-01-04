@@ -27,8 +27,8 @@ import (
 	"github.com/minio/pkg/v3/console"
 
 	"github.com/cheggaaa/pb"
+	"github.com/kypello-io/kc/pkg/probe"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
 )
 
 // accounter keeps tabs of ongoing data transfer information.

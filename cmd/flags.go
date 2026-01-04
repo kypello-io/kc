@@ -23,8 +23,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/minio-go/v7"
 )
 

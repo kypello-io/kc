@@ -26,10 +26,10 @@ import (
 	"time"
 
 	humanize "github.com/dustin/go-humanize"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 )
 
@@ -176,7 +176,7 @@ type ObjGETPerfResults struct {
 // ObjGETStats - GET stats of all the servers
 type ObjGETStats struct {
 	ObjPUTStats
-	TTFB madmin.Timings `json:"ttfb,omitempty"`
+	TTFB madmin.Timings `json:"ttfb,omitzero"`
 }
 
 // NetStats - Network performance stats

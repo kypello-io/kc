@@ -1,5 +1,5 @@
 ### Setup your mc Github Repository
-Fork [mc upstream](https://github.com/minio/mc/fork) source repository to your own personal repository.
+Fork [mc upstream](https://github.com/kypello-io/kc/fork) source repository to your own personal repository.
 ```
 $ mkdir -p $GOPATH/src/github.com/minio
 $ cd $GOPATH/src/github.com/minio

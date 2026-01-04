@@ -20,11 +20,12 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/fatih/color"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 )
 
@@ -81,21 +82,22 @@ func (u eventListMessage) JSON() string {
 }
 
 func (u eventListMessage) String() string {
-	msg := console.Colorize("ARN", fmt.Sprintf("%s   ", u.Arn))
+	var msg strings.Builder
+	msg.WriteString(console.Colorize("ARN", fmt.Sprintf("%s   ", u.Arn)))
 	for i, event := range u.Event {
-		msg += console.Colorize("Event", event)
+		msg.WriteString(console.Colorize("Event", event))
 		if i != len(u.Event)-1 {
-			msg += ","
+			msg.WriteString(",")
 		}
 	}
-	msg += console.Colorize("Filter", "   Filter: ")
+	msg.WriteString(console.Colorize("Filter", "   Filter: "))
 	if u.Prefix != "" {
-		msg += console.Colorize("Filter", fmt.Sprintf("prefix=\"%s\"", u.Prefix))
+		msg.WriteString(console.Colorize("Filter", fmt.Sprintf("prefix=\"%s\"", u.Prefix)))
 	}
 	if u.Suffix != "" {
-		msg += console.Colorize("Filter", fmt.Sprintf("suffix=\"%s\"", u.Suffix))
+		msg.WriteString(console.Colorize("Filter", fmt.Sprintf("suffix=\"%s\"", u.Suffix)))
 	}
-	return msg
+	return msg.String()
 }
 
 func mainEventList(cliCtx *cli.Context) error {

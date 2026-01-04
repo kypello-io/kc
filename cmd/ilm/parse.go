@@ -23,7 +23,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/mc/pkg/probe"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/minio-go/v7/pkg/lifecycle"
 )
 
@@ -36,7 +36,7 @@ const (
 // Extracts the tags provided by user. The tagfilter array will be put in lifecycleRule structure.
 func extractILMTags(tagLabelVal string) []lifecycle.Tag {
 	var ilmTagKVList []lifecycle.Tag
-	for _, tag := range strings.Split(tagLabelVal, tagSeperator) {
+	for tag := range strings.SplitSeq(tagLabelVal, tagSeperator) {
 		if tag == "" {
 			// split returns empty for empty tagLabelVal, skip it.
 			continue

@@ -30,7 +30,7 @@ docker: build
 
 vet:
 	@echo "Running $@"
-	@GO111MODULE=on go vet github.com/minio/mc/...
+	@GO111MODULE=on go vet github.com/kypello-io/kc/...
 
 lint-fix: getdeps ## runs golangci-lint suite of linters with automatic fixes
 	@echo "Running $@ check"

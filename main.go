@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package main // import "github.com/minio/mc"
+package main // import "github.com/kypello-io/kc"
 
 import (
 	"os"
 
-	mc "github.com/minio/mc/cmd"
+	mc "github.com/kypello-io/kc/cmd"
 	"github.com/minio/pkg/v3/console"
 )
 

@@ -187,32 +187,33 @@ func (e *Error) String() string {
 	defer e.lock.RUnlock()
 
 	if e.Cause != nil {
-		str := e.Cause.Error()
+		var str strings.Builder
+		str.WriteString(e.Cause.Error())
 		callLen := len(e.CallTrace)
 		for i := callLen - 1; i >= 0; i-- {
 			if len(e.CallTrace[i].Env) > 0 {
-				str += fmt.Sprintf("\n (%d) %s:%d %s(..) Tags: [%s]",
-					i, e.CallTrace[i].Filename, e.CallTrace[i].Line, e.CallTrace[i].Function, strings.Join(e.CallTrace[i].Env["Tags"], ", "))
+				str.WriteString(fmt.Sprintf("\n (%d) %s:%d %s(..) Tags: [%s]",
+					i, e.CallTrace[i].Filename, e.CallTrace[i].Line, e.CallTrace[i].Function, strings.Join(e.CallTrace[i].Env["Tags"], ", ")))
 			} else {
-				str += fmt.Sprintf("\n (%d) %s:%d %s(..)",
-					i, e.CallTrace[i].Filename, e.CallTrace[i].Line, e.CallTrace[i].Function)
+				str.WriteString(fmt.Sprintf("\n (%d) %s:%d %s(..)",
+					i, e.CallTrace[i].Filename, e.CallTrace[i].Line, e.CallTrace[i].Function))
 			}
 		}
 
-		str += "\n "
+		str.WriteString("\n ")
 
 		for key, value := range appInfo {
-			str += key + ":" + value + " | "
+			str.WriteString(key + ":" + value + " | ")
 		}
 
-		str += "Host:" + e.SysInfo["host.name"] + " | "
-		str += "OS:" + e.SysInfo["host.os"] + " | "
-		str += "Arch:" + e.SysInfo["host.arch"] + " | "
-		str += "Lang:" + e.SysInfo["host.lang"] + " | "
-		str += "Mem:" + e.SysInfo["mem.used"] + "/" + e.SysInfo["mem.total"] + " | "
-		str += "Heap:" + e.SysInfo["mem.heap.used"] + "/" + e.SysInfo["mem.heap.total"]
+		str.WriteString("Host:" + e.SysInfo["host.name"] + " | ")
+		str.WriteString("OS:" + e.SysInfo["host.os"] + " | ")
+		str.WriteString("Arch:" + e.SysInfo["host.arch"] + " | ")
+		str.WriteString("Lang:" + e.SysInfo["host.lang"] + " | ")
+		str.WriteString("Mem:" + e.SysInfo["mem.used"] + "/" + e.SysInfo["mem.total"] + " | ")
+		str.WriteString("Heap:" + e.SysInfo["mem.heap.used"] + "/" + e.SysInfo["mem.heap.total"])
 
-		return str
+		return str.String()
 	}
 	return "<nil>"
 }

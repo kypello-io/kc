@@ -53,7 +53,7 @@ func (t PrettyTable) buildRow(contents ...string) (line string) {
 	totalColumns := min(len(t.cols), len(contents))
 
 	// Format fields and construct message
-	for i := 0; i < totalColumns; i++ {
+	for i := range totalColumns {
 		// Default field format without pretty effect
 		fieldContent := ""
 		fieldFormat := "%s"

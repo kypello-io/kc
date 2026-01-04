@@ -28,9 +28,9 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
+	"github.com/kypello-io/kc/pkg/probe"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/lifecycle"
 	"github.com/minio/minio-go/v7/pkg/notification"
@@ -378,32 +378,32 @@ type BucketInfo struct {
 	Versioning struct {
 		Status    string `json:"status"`
 		MFADelete string `json:"MFADelete"`
-	} `json:"Versioning,omitempty"`
+	} `json:"Versioning,omitzero"`
 	Encryption struct {
 		Algorithm string `json:"algorithm,omitempty"`
 		KeyID     string `json:"keyId,omitempty"`
-	} `json:"Encryption,omitempty"`
+	} `json:"Encryption,omitzero"`
 	Locking struct {
 		Enabled  string              `json:"enabled"`
 		Mode     minio.RetentionMode `json:"mode"`
 		Validity string              `json:"validity"`
-	} `json:"ObjectLock,omitempty"`
+	} `json:"ObjectLock,omitzero"`
 	Replication struct {
 		Enabled bool               `json:"enabled"`
-		Config  replication.Config `json:"config,omitempty"`
+		Config  replication.Config `json:"config,omitzero"`
 	} `json:"Replication"`
 	Policy struct {
 		Type string `json:"type"`
 		Text string `json:"policy,omitempty"`
-	} `json:"Policy,omitempty"`
+	} `json:"Policy,omitzero"`
 	Location string            `json:"location"`
 	Tagging  map[string]string `json:"tagging,omitempty"`
 	ILM      struct {
 		Config *lifecycle.Configuration `json:"config,omitempty"`
-	} `json:"ilm,omitempty"`
+	} `json:"ilm,omitzero"`
 	Notification struct {
-		Config notification.Configuration `json:"config,omitempty"`
-	} `json:"notification,omitempty"`
+		Config notification.Configuration `json:"config,omitzero"`
+	} `json:"notification,omitzero"`
 }
 
 // Tags returns stringified tag list.

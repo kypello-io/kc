@@ -22,7 +22,7 @@ import (
 	"maps"
 	"strings"
 
-	"github.com/minio/mc/pkg/probe"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 	"github.com/minio/pkg/v3/quick"
 )

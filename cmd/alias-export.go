@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 )
 

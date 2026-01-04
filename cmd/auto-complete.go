@@ -547,7 +547,7 @@ var completeCmds = map[string]complete.Predictor{
 func flagsToCompleteFlags(flags []cli.Flag) complete.Flags {
 	complFlags := make(complete.Flags)
 	for _, f := range flags {
-		for _, s := range strings.Split(f.GetName(), ",") {
+		for s := range strings.SplitSeq(f.GetName(), ",") {
 			var flagName string
 			s = strings.TrimSpace(s)
 			if len(s) == 1 {

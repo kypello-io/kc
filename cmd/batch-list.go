@@ -22,10 +22,10 @@ import (
 	"strings"
 
 	humanize "github.com/dustin/go-humanize"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -134,7 +134,7 @@ func (c batchListMessage) JSON() string {
 	c.Status = "success"
 
 	// Create a temporary slice to hold jobs with derived statuses
-	jobsWithStatus := make([]map[string]interface{}, len(c.Jobs))
+	jobsWithStatus := make([]map[string]any, len(c.Jobs))
 
 	// Fetch the status for the batch job using BatchJobStatus API
 	for i, job := range c.Jobs {
@@ -155,7 +155,7 @@ func (c batchListMessage) JSON() string {
 		}
 
 		// Add the job details along with the derived status
-		jobsWithStatus[i] = map[string]interface{}{
+		jobsWithStatus[i] = map[string]any{
 			"id":      job.ID,
 			"type":    job.Type,
 			"user":    job.User,
@@ -165,7 +165,7 @@ func (c batchListMessage) JSON() string {
 	}
 
 	// Marshal the updated jobs into JSON
-	batchListMessageBytes, e := json.MarshalIndent(map[string]interface{}{
+	batchListMessageBytes, e := json.MarshalIndent(map[string]any{
 		"status": c.Status,
 		"jobs":   jobsWithStatus,
 	}, "", " ")

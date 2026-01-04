@@ -18,8 +18,8 @@
 package cmd
 
 import (
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
 )
 
 var adminTierVerifyCmd = cli.Command{

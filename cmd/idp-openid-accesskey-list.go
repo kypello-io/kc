@@ -22,10 +22,10 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	humanize "github.com/dustin/go-humanize"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
 )
 
 var idpOpenIDAccesskeyListFlags = []cli.Flag{

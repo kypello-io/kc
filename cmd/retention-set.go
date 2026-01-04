@@ -23,8 +23,8 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
 	minio "github.com/minio/minio-go/v7"
 	"github.com/minio/pkg/v3/console"
 )

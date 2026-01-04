@@ -26,8 +26,8 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 )
 
@@ -57,7 +57,7 @@ func (t treeMessage) String() string {
 // JSON'ified message for scripting.
 // Does No-op. JSON requests are redirected to `ls -r --json`
 func (t treeMessage) JSON() string {
-	fatalIf(probe.NewError(errors.New("JSON() should never be called here")), "Unable to list in tree format. Please report this issue at https://github.com/minio/mc/issues")
+	fatalIf(probe.NewError(errors.New("JSON() should never be called here")), "Unable to list in tree format. Please report this issue at https://github.com/kypello-io/kc/issues")
 	return ""
 }
 

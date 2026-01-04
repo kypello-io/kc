@@ -24,9 +24,9 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/dustin/go-humanize"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
 )
 
 var adminSpeedtestCmd = cli.Command{

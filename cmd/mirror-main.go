@@ -33,9 +33,9 @@ import (
 	"github.com/dustin/go-humanize"
 
 	"github.com/fatih/color"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/encrypt"
 	"github.com/minio/minio-go/v7/pkg/notification"
@@ -875,20 +875,16 @@ func (mj *mirrorJob) mirror(ctx context.Context) bool {
 
 	// Starts watcher loop for watching for new events.
 	if mj.opts.isWatch || mj.opts.activeActive {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			mj.watchMirror(ctx)
-		}()
+		})
 	}
 
 	// Start mirroring.
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		// startMirror locks and blocks itself.
 		mj.startMirror(ctx)
-	}()
+	})
 
 	// Close statusCh when both watch & mirror quits
 	go func() {

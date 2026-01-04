@@ -6,8 +6,8 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/kypello-io/kc/pkg/probe"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
 )
 
 type retryManager struct {
