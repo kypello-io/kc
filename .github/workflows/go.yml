@@ -42,6 +42,7 @@ jobs:
       - name: Build on ${{ matrix.os }}
         if: matrix.os == 'macos-latest'
         run: |
+          go env -w CGO_ENABLED=0
           go build --ldflags="-s -w" -o %GOPATH%\bin\mc
           go test -v -race --timeout 30m ./...
       - name: Build on ${{ matrix.os }}
