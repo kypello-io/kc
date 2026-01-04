@@ -23,10 +23,10 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 	"github.com/minio/pkg/v3/console"
 
-	"github.com/cheggaaa/pb"
 	"github.com/kypello-io/kc/pkg/probe"
 	json "github.com/minio/colorjson"
 )
@@ -118,7 +118,7 @@ func (c accountStat) String() string {
 		"Speed",
 	})
 
-	speedBox := pb.Format(int64(c.Speed)).To(pb.U_BYTES).String()
+	speedBox := humanize.Bytes(uint64(c.Speed))
 	if speedBox == "" {
 		speedBox = "0 MB"
 	} else {
@@ -126,9 +126,9 @@ func (c accountStat) String() string {
 	}
 
 	cellText = append(cellText, []string{
-		pb.Format(c.Total).To(pb.U_BYTES).String(),
-		pb.Format(c.Transferred).To(pb.U_BYTES).String(),
-		pb.Format(int64(c.Duration)).To(pb.U_DURATION).String(),
+		humanize.Bytes(uint64(c.Total)),
+		humanize.Bytes(uint64(c.Transferred)),
+		c.Duration.String(),
 		speedBox,
 	})
 
