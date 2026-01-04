@@ -60,7 +60,7 @@ func (t PrettyRecord) buildRecord(contents ...string) (line string) {
 	totalRows := min(len(t.rows), len(contents))
 	var format, separator string
 	// Format fields and construct message
-	for i := 0; i < totalRows; i++ {
+	for i := range totalRows {
 		// default heading
 		indent := 0
 		format = "%s\n"

@@ -23,9 +23,9 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 )
 

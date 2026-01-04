@@ -31,23 +31,18 @@ func testPipeChan(inputCh, outputCh chan notify.EventInfo, totalMsgs int) error 
 	msgCtnt := notify.EventInfo(nil)
 
 	// Send messages up to totalMsgs
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		for range totalMsgs {
 			inputCh <- msgCtnt
 		}
 		close(inputCh)
-	}()
+	})
 
 	// Goroutine to receive and check messages
 	var recvMsgs int
 	var recvErr error
 
-	wg.Add(1)
-
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		for msg := range outputCh {
 			recvMsgs++
 			if msg != msgCtnt {
@@ -55,7 +50,7 @@ func testPipeChan(inputCh, outputCh chan notify.EventInfo, totalMsgs int) error 
 				return
 			}
 		}
-	}()
+	})
 
 	// Wait until we finish sending and receiving messages
 	wg.Wait()

@@ -25,10 +25,10 @@ import (
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/kypello-io/kc/cmd/ilm"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/cmd/ilm"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/minio-go/v7/pkg/lifecycle"
 )
 
@@ -83,7 +83,7 @@ type ilmListMessage struct {
 	Target    string                   `json:"target"`
 	Context   *cli.Context             `json:"-"`
 	Config    *lifecycle.Configuration `json:"config"`
-	UpdatedAt time.Time                `json:"updatedAt,omitempty"`
+	UpdatedAt time.Time                `json:"updatedAt,omitzero"`
 }
 
 func (i ilmListMessage) String() string {

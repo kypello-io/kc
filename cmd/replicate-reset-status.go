@@ -20,12 +20,13 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/fatih/color"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/minio-go/v7/pkg/replication"
 	"github.com/minio/pkg/v3/console"
 )
@@ -89,41 +90,41 @@ func (r replicateResyncStatusMessage) String() string {
 		return console.Colorize("replicateResyncStatusWarn", "No replication resync status available.")
 	}
 	coloredDot := console.Colorize("Headers", dot)
-	var rows string
-	rows += console.Colorize("TDetail", "Resync status summary:")
+	var rows strings.Builder
+	rows.WriteString(console.Colorize("TDetail", "Resync status summary:"))
 
 	for _, st := range r.ResyncTargetsInfo.Targets {
-		rows += "\n"
-		rows += console.Colorize("replicateResyncStatusMsg", newPrettyTable(" | ",
+		rows.WriteString("\n")
+		rows.WriteString(console.Colorize("replicateResyncStatusMsg", newPrettyTable(" | ",
 			Field{"ARN", 120},
-		).buildRow(fmt.Sprintf("%s %s", coloredDot, st.Arn)))
-		rows += "\n"
-		rows += console.Colorize("TDetail", "   Status: ")
-		rows += console.Colorize(st.ResyncStatus, st.ResyncStatus)
-		rows += "\n"
+		).buildRow(fmt.Sprintf("%s %s", coloredDot, st.Arn))))
+		rows.WriteString("\n")
+		rows.WriteString(console.Colorize("TDetail", "   Status: "))
+		rows.WriteString(console.Colorize(st.ResyncStatus, st.ResyncStatus))
+		rows.WriteString("\n")
 
 		maxLen := 15
 		theme := []string{"Replicated", "Failed"}
-		rows += console.Colorize("THeaders", newPrettyTable(" | ",
+		rows.WriteString(console.Colorize("THeaders", newPrettyTable(" | ",
 			Field{"Status", 21},
 			Field{"Size", maxLen},
 			Field{"Count", maxLen},
-		).buildRow("   Replication Status", "Size (Bytes)", "Count"))
-		rows += "\n"
-		rows += console.Colorize(theme[0], newPrettyTable(" | ",
+		).buildRow("   Replication Status", "Size (Bytes)", "Count")))
+		rows.WriteString("\n")
+		rows.WriteString(console.Colorize(theme[0], newPrettyTable(" | ",
 			Field{"Status", 21},
 			Field{"Size", maxLen},
 			Field{"Count", maxLen},
-		).buildRow("   Replicated", humanize.IBytes(uint64(st.ReplicatedSize)), humanize.Comma(int64(st.ReplicatedCount))))
-		rows += "\n"
-		rows += console.Colorize(theme[0], newPrettyTable(" | ",
+		).buildRow("   Replicated", humanize.IBytes(uint64(st.ReplicatedSize)), humanize.Comma(int64(st.ReplicatedCount)))))
+		rows.WriteString("\n")
+		rows.WriteString(console.Colorize(theme[0], newPrettyTable(" | ",
 			Field{"Status", 21},
 			Field{"Size", maxLen},
 			Field{"Count", maxLen},
-		).buildRow("   Failed", humanize.IBytes(uint64(st.FailedSize)), humanize.Comma(int64(st.FailedCount))))
-		rows += "\n"
+		).buildRow("   Failed", humanize.IBytes(uint64(st.FailedSize)), humanize.Comma(int64(st.FailedCount)))))
+		rows.WriteString("\n")
 	}
-	return rows
+	return rows.String()
 }
 
 func mainreplicateResyncStatus(cliCtx *cli.Context) error {

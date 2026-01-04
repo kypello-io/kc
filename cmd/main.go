@@ -34,9 +34,9 @@ import (
 	"time"
 
 	"github.com/inconshreveable/mousetrap"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/minio-go/v7/pkg/set"
 	"github.com/minio/pkg/v3/console"
 	"github.com/minio/pkg/v3/env"
@@ -206,24 +206,25 @@ func commandNotFound(ctx *cli.Context, cmds []cli.Command) {
 		cli.ShowCommandHelp(ctx, command)
 		return
 	}
-	msg := fmt.Sprintf("`%s` is not a recognized command. Get help using `--help` flag.", command)
+	var msg strings.Builder
+	msg.WriteString(fmt.Sprintf("`%s` is not a recognized command. Get help using `--help` flag.", command))
 	commandsTree := trie.NewTrie()
 	for _, cmd := range cmds {
 		commandsTree.Insert(cmd.Name)
 	}
 	closestCommands := findClosestCommands(commandsTree, command)
 	if len(closestCommands) > 0 {
-		msg += "\n\nDid you mean one of these?\n"
+		msg.WriteString("\n\nDid you mean one of these?\n")
 		if len(closestCommands) == 1 {
 			cmd := closestCommands[0]
-			msg += fmt.Sprintf("        `%s`", cmd)
+			msg.WriteString(fmt.Sprintf("        `%s`", cmd))
 		} else {
 			for _, cmd := range closestCommands {
-				msg += fmt.Sprintf("        `%s`\n", cmd)
+				msg.WriteString(fmt.Sprintf("        `%s`\n", cmd))
 			}
 		}
 	}
-	fatalIf(errDummy().Trace(), msg)
+	fatalIf(errDummy().Trace(), msg.String())
 }
 
 // Check for sane config environment early on and gracefully report.

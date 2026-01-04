@@ -38,7 +38,7 @@ import (
 	"github.com/minio/minio-go/v7"
 
 	jwtgo "github.com/golang-jwt/jwt/v4"
-	"github.com/minio/mc/pkg/probe"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 )
 
@@ -286,8 +286,8 @@ func parseAttribute(meta map[string]string) (map[string]string, error) {
 
 	parseAttrs := func(attrs string) error {
 		var err error
-		param := strings.Split(attrs, "/")
-		for _, val := range param {
+		param := strings.SplitSeq(attrs, "/")
+		for val := range param {
 			attr := strings.TrimSpace(val)
 			if attr == "" {
 				err = ErrInvalidFileSystemAttribute

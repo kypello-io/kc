@@ -25,9 +25,9 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/fatih/color"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/minio-go/v7/pkg/notification"
 	"github.com/minio/pkg/v3/console"
 )
@@ -108,8 +108,8 @@ type watchMessage struct {
 	Source struct {
 		Host      string `json:"host,omitempty"`
 		Port      string `json:"port,omitempty"`
-		UserAgent string `json:"userAgent,omitempty"`
-	} `json:"source,omitempty"`
+		UserAgent string `json:"userAgent,omitzero"`
+	} `json:"source,omitzero"`
 }
 
 func (u watchMessage) JSON() string {
@@ -170,12 +170,9 @@ func mainWatch(cliCtx *cli.Context) error {
 	var wg sync.WaitGroup
 
 	// Increment wait group to wait subsequent routine.
-	wg.Add(1)
 
 	// Start routine to watching on events.
-	go func() {
-		defer wg.Done()
-
+	wg.Go(func() {
 		// Wait for all events.
 		for {
 			select {
@@ -208,7 +205,7 @@ func mainWatch(cliCtx *cli.Context) error {
 				}
 			}
 		}
-	}()
+	})
 
 	// Wait on the routine to be finished or exit.
 	wg.Wait()

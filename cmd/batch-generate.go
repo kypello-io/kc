@@ -20,10 +20,10 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
 )
 
 var batchGenerateCmd = cli.Command{

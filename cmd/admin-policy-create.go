@@ -22,10 +22,10 @@ import (
 	"os"
 
 	"github.com/fatih/color"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 )
 
@@ -69,7 +69,7 @@ type userPolicyMessage struct {
 	op          string
 	Status      string            `json:"status"`
 	Policy      string            `json:"policy,omitempty"`
-	PolicyInfo  madmin.PolicyInfo `json:"policyInfo,omitempty"`
+	PolicyInfo  madmin.PolicyInfo `json:"policyInfo,omitzero"`
 	UserOrGroup string            `json:"userOrGroup,omitempty"`
 	IsGroup     bool              `json:"isGroup"`
 }

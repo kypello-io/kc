@@ -31,9 +31,9 @@ import (
 	"time"
 
 	"github.com/klauspost/compress/gzhttp"
-	"github.com/minio/mc/pkg/httptracer"
-	"github.com/minio/mc/pkg/limiter"
-	"github.com/minio/mc/pkg/probe"
+	"github.com/kypello-io/kc/pkg/httptracer"
+	"github.com/kypello-io/kc/pkg/limiter"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/cors"
 	"github.com/minio/minio-go/v7/pkg/credentials"

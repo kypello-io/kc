@@ -24,7 +24,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/minio/mc/pkg/probe"
+	"github.com/kypello-io/kc/pkg/probe"
 )
 
 // validate the passed metadataString and populate the map

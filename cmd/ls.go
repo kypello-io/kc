@@ -26,8 +26,8 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
+	"github.com/kypello-io/kc/pkg/probe"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 )
 

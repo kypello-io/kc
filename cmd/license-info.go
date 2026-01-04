@@ -25,9 +25,9 @@ import (
 	"github.com/charmbracelet/bubbles/table"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/fatih/color"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 )
 
@@ -63,7 +63,7 @@ const (
 
 type licInfoMessage struct {
 	Status string  `json:"status"`
-	Info   licInfo `json:"info,omitempty"`
+	Info   licInfo `json:"info,omitzero"`
 	Error  string  `json:"error,omitempty"`
 }
 

@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
 )
 
 var shareListFlags = []cli.Flag{}

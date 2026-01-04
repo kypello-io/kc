@@ -23,8 +23,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/minio-go/v7/pkg/set"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
@@ -88,13 +88,13 @@ type HwDrivePerfV1 struct {
 
 // SwInfoV1 - software health Info
 type SwInfoV1 struct {
-	Minio  MinioHealthInfoV1     `json:"minio,omitempty"`
+	Minio  MinioHealthInfoV1     `json:"minio,omitzero"`
 	OsInfo []madmin.ServerOsInfo `json:"osinfos,omitempty"`
 }
 
 // MinioHealthInfoV1 - Health info of the MinIO cluster
 type MinioHealthInfoV1 struct {
-	Info     madmin.InfoMessage      `json:"info,omitempty"`
+	Info     madmin.InfoMessage      `json:"info,omitzero"`
 	Config   any                     `json:"config,omitempty"`
 	ProcInfo []madmin.ServerProcInfo `json:"procinfos,omitempty"`
 	Error    string                  `json:"error,omitempty"`
@@ -102,11 +102,11 @@ type MinioHealthInfoV1 struct {
 
 // ClusterHealthV1 - main struct of the health report
 type ClusterHealthV1 struct {
-	TimeStamp time.Time   `json:"timestamp,omitempty"`
+	TimeStamp time.Time   `json:"timestamp,omitzero"`
 	Status    string      `json:"status"`
 	Error     string      `json:"error,omitempty"`
-	Hardware  HwServersV1 `json:"hardware,omitempty"`
-	Software  SwInfoV1    `json:"software,omitempty"`
+	Hardware  HwServersV1 `json:"hardware,omitzero"`
+	Software  SwInfoV1    `json:"software,omitzero"`
 }
 
 func (ch ClusterHealthV1) String() string {

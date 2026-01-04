@@ -55,8 +55,8 @@ import (
 	"github.com/minio/minio-go/v7/pkg/tags"
 	"github.com/minio/pkg/v3/mimedb"
 
-	"github.com/minio/mc/pkg/deadlineconn"
-	"github.com/minio/mc/pkg/probe"
+	"github.com/kypello-io/kc/pkg/deadlineconn"
+	"github.com/kypello-io/kc/pkg/probe"
 )
 
 // S3Client construct
@@ -1566,7 +1566,7 @@ func (c *S3Client) listObjectWrapper(ctx context.Context, bucket, object string,
 
 	if isGoogle(c.targetURL.Host) {
 		// Google Cloud S3 layer doesn't implement ListObjectsV2 implementation
-		// https://github.com/minio/mc/issues/3073
+		// https://github.com/kypello-io/kc/issues/3073
 		return c.api.ListObjects(ctx, bucket, minio.ListObjectsOptions{Prefix: object, Recursive: isRecursive, UseV1: true, MaxKeys: maxKeys})
 	}
 	opts := minio.ListObjectsOptions{Prefix: object, Recursive: isRecursive, WithMetadata: metadata, MaxKeys: maxKeys}
@@ -2189,11 +2189,12 @@ func (c *S3Client) listIncompleteRecursiveInRoutine(ctx context.Context, content
 
 // Join bucket and object name, keep the leading slash for directory markers
 func (c *S3Client) joinPath(bucket string, objects ...string) string {
-	p := bucket
+	var p strings.Builder
+	p.WriteString(bucket)
 	for _, o := range objects {
-		p += string(c.targetURL.Separator) + o
+		p.WriteString(string(c.targetURL.Separator) + o)
 	}
-	return p
+	return p.String()
 }
 
 // Build new absolute URL path by joining path segments with URL path separator.

@@ -39,7 +39,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/minio/mc/pkg/disk"
+	"github.com/kypello-io/kc/pkg/disk"
 )
 
 // RUN: go test -v ./... -run Test_FullSuite
@@ -2660,9 +2660,9 @@ func fatalIfError(err error, t *testing.T) {
 
 func parseFindJSONOutput(out string) (findList []*findMessage, err error) {
 	findList = make([]*findMessage, 0)
-	splitList := bytes.Split([]byte(out), []byte{10})
+	splitList := bytes.SplitSeq([]byte(out), []byte{10})
 
-	for _, v := range splitList {
+	for v := range splitList {
 		if len(v) < 1 {
 			continue
 		}
@@ -2686,9 +2686,9 @@ func parseFindJSONOutput(out string) (findList []*findMessage, err error) {
 
 func parseDUJSONOutput(out string) (duList []duMessage, err error) {
 	duList = make([]duMessage, 0)
-	splitList := bytes.Split([]byte(out), []byte{10})
+	splitList := bytes.SplitSeq([]byte(out), []byte{10})
 
-	for _, v := range splitList {
+	for v := range splitList {
 		if len(v) < 1 {
 			continue
 		}
@@ -2712,9 +2712,9 @@ func parseDUJSONOutput(out string) (duList []duMessage, err error) {
 
 func parseLSJSONOutput(out string) (lsList []contentMessage, err error) {
 	lsList = make([]contentMessage, 0)
-	splitList := bytes.Split([]byte(out), []byte{10})
+	splitList := bytes.SplitSeq([]byte(out), []byte{10})
 
-	for _, v := range splitList {
+	for v := range splitList {
 		if len(v) < 1 {
 			continue
 		}
@@ -2810,8 +2810,8 @@ func validateErrorMSGValues(
 
 func parseUserMessageListOutput(out string) (users []*userMessage, err error) {
 	users = make([]*userMessage, 0)
-	splitList := bytes.Split([]byte(out), []byte{10})
-	for _, v := range splitList {
+	splitList := bytes.SplitSeq([]byte(out), []byte{10})
+	for v := range splitList {
 		if len(v) < 1 {
 			continue
 		}

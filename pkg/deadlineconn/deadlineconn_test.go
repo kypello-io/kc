@@ -41,10 +41,7 @@ func TestBuffConnReadTimeout(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-
+	wg.Go(func() {
 		tcpConn, terr := tcpListener.AcceptTCP()
 		if terr != nil {
 			t.Errorf("failed to accept new connection. %v", terr)
@@ -88,7 +85,7 @@ func TestBuffConnReadTimeout(t *testing.T) {
 			t.Errorf("failed to write to client. %v", terr)
 			return
 		}
-	}()
+	})
 
 	c, err := net.Dial("tcp", serverAddr)
 	if err != nil {

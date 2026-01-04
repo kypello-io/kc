@@ -34,11 +34,11 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/madmin-go/v3/estream"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 )
 
@@ -196,10 +196,8 @@ func mainSupportInspect(ctx *cli.Context) error {
 		copied = true
 		var aErr error
 		var wg sync.WaitGroup
-		wg.Add(1)
 		// Validate stream...
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			er, err := estream.NewReader(pr)
 			if err != nil {
 				// Ignore if header is non-parsable...
@@ -227,7 +225,7 @@ func mainSupportInspect(ctx *cli.Context) error {
 					return
 				}
 			}
-		}()
+		})
 		_, e = io.Copy(io.MultiWriter(tmpFile, pw), r)
 		pw.CloseWithError(e)
 		wg.Wait()

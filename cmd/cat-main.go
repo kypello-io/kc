@@ -30,8 +30,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
 )
 
 var catFlags = []cli.Flag{

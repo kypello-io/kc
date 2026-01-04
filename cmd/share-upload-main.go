@@ -24,8 +24,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
 )
 
 var shareUploadFlags = []cli.Flag{
@@ -116,22 +116,23 @@ func checkShareUploadSyntax(ctx *cli.Context) {
 // makeCurlCmd constructs curl command-line.
 func makeCurlCmd(key, postURL string, isRecursive bool, uploadInfo map[string]string) (string, *probe.Error) {
 	postURL += " "
-	curlCommand := "curl " + postURL
+	var curlCommand strings.Builder
+	curlCommand.WriteString("curl " + postURL)
 	for k, v := range uploadInfo {
 		if k == "key" {
 			key = v
 			continue
 		}
-		curlCommand += fmt.Sprintf("-F %s=%s ", k, v)
+		curlCommand.WriteString(fmt.Sprintf("-F %s=%s ", k, v))
 	}
 	// If key starts with is enabled prefix it with the output.
 	if isRecursive {
-		curlCommand += fmt.Sprintf("-F key=%s<NAME> ", shellQuote(key)) // Object name.
+		curlCommand.WriteString(fmt.Sprintf("-F key=%s<NAME> ", shellQuote(key))) // Object name.
 	} else {
-		curlCommand += fmt.Sprintf("-F key=%s ", shellQuote(key)) // Object name.
+		curlCommand.WriteString(fmt.Sprintf("-F key=%s ", shellQuote(key))) // Object name.
 	}
-	curlCommand += "-F file=@<FILE>" // File to upload.
-	return curlCommand, nil
+	curlCommand.WriteString("-F file=@<FILE>") // File to upload.
+	return curlCommand.String(), nil
 }
 
 // save shared URL to disk.

@@ -33,8 +33,8 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/google/shlex"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 	"golang.org/x/text/unicode/norm"
 
@@ -88,7 +88,7 @@ func nameMatch(pattern, path string) bool {
 	matched, e := filepath.Match(pattern, filepath.Base(path))
 	errorIf(probe.NewError(e).Trace(pattern, path), "Unable to match with input pattern.")
 	if !matched {
-		for _, pathComponent := range strings.Split(path, "/") {
+		for pathComponent := range strings.SplitSeq(path, "/") {
 			matched = pathComponent == pattern
 			if matched {
 				break

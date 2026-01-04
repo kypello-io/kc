@@ -37,10 +37,10 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 	"github.com/klauspost/compress/zstd"
+	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
 	"github.com/minio/pkg/v3/console"
 )
 
@@ -474,7 +474,7 @@ func tracingOpts(ctx *cli.Context, apis []string) (opts madmin.ServiceTraceOpts,
 	}
 
 	for _, api := range apis {
-		for _, api := range strings.Split(api, ",") {
+		for api := range strings.SplitSeq(api, ",") {
 			fn, ok := traceCallTypes[api]
 			if !ok {
 				fn, ok = traceCallTypeAliases[api]
@@ -968,7 +968,7 @@ type statItem struct {
 	Duration       time.Duration `json:"duration"`
 	Errors         int           `json:"errors,omitempty"`
 	CallStatsCount int           `json:"callStatsCount,omitempty"`
-	CallStats      callStats     `json:"callStats,omitempty"`
+	CallStats      callStats     `json:"callStats,omitzero"`
 	TTFB           time.Duration `json:"ttfb,omitempty"`
 	MaxTTFB        time.Duration `json:"maxTTFB,omitempty"`
 	MaxDur         time.Duration `json:"maxDuration"`
