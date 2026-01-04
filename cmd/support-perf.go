@@ -27,10 +27,10 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/pkg/v3/console"
 )
 
 var supportPerfFlags = append([]cli.Flag{
@@ -83,7 +83,7 @@ var supportPerfFlags = append([]cli.Flag{
 		Usage:  "run tests on drive(s) one-by-one",
 		Hidden: true,
 	},
-}, subnetCommonFlags...)
+}, supportGlobalFlags...)
 
 var supportPerfCmd = cli.Command{
 	Name:            "perf",
@@ -461,11 +461,7 @@ func convertPerfResults(results []PerfTestResult) PerfTestOutput {
 }
 
 func execSupportPerf(ctx *cli.Context, aliasedURL, perfType string) {
-	alias, apiKey := initSubnetConnectivity(ctx, aliasedURL, true)
-	if len(apiKey) == 0 {
-		// api key not passed as flag. Check that the cluster is registered.
-		apiKey = validateClusterRegistered(alias, true)
-	}
+	alias, _ := url2Alias(aliasedURL)
 
 	results := runPerfTests(ctx, aliasedURL, perfType)
 	if globalJSON {
@@ -480,33 +476,12 @@ func execSupportPerf(ctx *cli.Context, aliasedURL, perfType string) {
 		resultFileNamePfx := fmt.Sprintf("%s-perf_%s", filepath.Clean(alias), UTCNow().Format("20060102150405"))
 		resultFileName := resultFileNamePfx + ".json"
 
-		regInfo := GetClusterRegInfo(getAdminInfo(aliasedURL), alias)
-		tmpFileName, e := zipPerfResult(convertPerfResults(results), resultFileName, regInfo)
+		tmpFileName, e := zipPerfResult(convertPerfResults(results), resultFileName)
 		fatalIf(probe.NewError(e), "Unable to generate zip file from performance results")
 
-		if globalAirgapped {
-			console.Infoln()
-			savePerfResultFile(tmpFileName, resultFileNamePfx)
-			return
-		}
-
-		uploadURL := SubnetUploadURL("perf")
-		reqURL, headers := prepareSubnetUploadURL(uploadURL, alias, apiKey)
-
-		_, e = (&SubnetFileUploader{
-			alias:             alias,
-			FilePath:          tmpFileName,
-			ReqURL:            reqURL,
-			Headers:           headers,
-			DeleteAfterUpload: true,
-		}).UploadFileToSubnet()
-		if e != nil {
-			errorIf(probe.NewError(e), "Unable to upload performance results to SUBNET portal")
-			savePerfResultFile(tmpFileName, resultFileNamePfx)
-			return
-		}
-
-		console.Infoln("Uploaded performance report to SUBNET successfully")
+		console.Infoln()
+		savePerfResultFile(tmpFileName, resultFileNamePfx)
+		return
 	}
 }
 
@@ -562,7 +537,7 @@ func writeJSONObjToZip(zipWriter *zip.Writer, obj any, filename string) error {
 }
 
 // compress MinIO performance output
-func zipPerfResult(perfOutput PerfTestOutput, resultFilename string, regInfo ClusterRegistrationInfo) (string, error) {
+func zipPerfResult(perfOutput PerfTestOutput, resultFilename string) (string, error) {
 	// Create perf results zip file
 	tmpArchive, e := os.CreateTemp("", "mc-perf-*.zip")
 
@@ -575,11 +550,6 @@ func zipPerfResult(perfOutput PerfTestOutput, resultFilename string, regInfo Clu
 	defer zipWriter.Close()
 
 	e = writeJSONObjToZip(zipWriter, perfOutput, resultFilename)
-	if e != nil {
-		return "", e
-	}
-
-	e = writeJSONObjToZip(zipWriter, regInfo, "cluster.info")
 	if e != nil {
 		return "", e
 	}

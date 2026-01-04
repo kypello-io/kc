@@ -21,7 +21,7 @@ import (
 	"os"
 
 	mc "github.com/kypello-io/kc/cmd"
-	"github.com/minio/pkg/v3/console"
+	"github.com/kypello-io/pkg/v3/console"
 )
 
 func main() {

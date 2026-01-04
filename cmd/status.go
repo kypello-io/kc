@@ -22,7 +22,7 @@ import (
 	"sync/atomic"
 
 	"github.com/kypello-io/kc/pkg/probe"
-	"github.com/minio/pkg/v3/console"
+	"github.com/kypello-io/pkg/v3/console"
 )
 
 // Status implements a interface that can be used in quit mode or with progressbar.

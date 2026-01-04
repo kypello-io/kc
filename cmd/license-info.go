@@ -18,17 +18,12 @@
 package cmd
 
 import (
-	"fmt"
-	"net/http"
 	"time"
 
-	"github.com/charmbracelet/bubbles/table"
-	"github.com/charmbracelet/lipgloss"
-	"github.com/fatih/color"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/pkg/v3/console"
 )
 
 var licenseInfoCmd = cli.Command{
@@ -37,7 +32,7 @@ var licenseInfoCmd = cli.Command{
 	OnUsageError: onUsageError,
 	Action:       mainLicenseInfo,
 	Before:       setGlobalsFromContext,
-	Flags:        subnetCommonFlags,
+	Flags:        supportGlobalFlags,
 	CustomHelpTemplate: `NAME:
   {{.HelpName}} - {{.Usage}}
 
@@ -78,14 +73,6 @@ type licInfo struct {
 	APIKey       string     `json:"api_key,omitempty"`       // API Key of the org account
 }
 
-func licInfoField(s string) string {
-	return console.Colorize(licInfoFieldTag, s)
-}
-
-func licInfoVal(s string) string {
-	return console.Colorize(licInfoValTag, s)
-}
-
 func licInfoMsg(s string) string {
 	return console.Colorize(licInfoMsgTag, s)
 }
@@ -100,11 +87,7 @@ func (li licInfoMessage) String() string {
 		return licInfoErr(li.Error)
 	}
 
-	if len(li.Info.Message) > 0 {
-		return licInfoMsg(li.Info.Message)
-	}
-
-	return getLicInfoStr(li.Info)
+	return licInfoMsg(li.Info.Message)
 }
 
 // JSON jsonified license info
@@ -115,122 +98,18 @@ func (li licInfoMessage) JSON() string {
 	return string(jsonBytes)
 }
 
-func getLicInfoStr(li licInfo) string {
-	columns := []table.Column{
-		{Title: "License", Width: 20},
-		{Title: "", Width: 45},
-	}
-
-	rows := []table.Row{
-		{licInfoField("Organization"), licInfoVal(li.Organization)},
-		{licInfoField("Plan"), licInfoVal(li.Plan)},
-		{licInfoField("Issued"), licInfoVal(li.IssuedAt.Format(http.TimeFormat))},
-		{licInfoField("Expires"), licInfoVal(li.ExpiresAt.Format(http.TimeFormat))},
-	}
-
-	if len(li.LicenseID) > 0 {
-		rows = append(rows, table.Row{licInfoField("License ID"), licInfoVal(li.LicenseID)})
-	}
-	if len(li.DeploymentID) > 0 {
-		rows = append(rows, table.Row{licInfoField("Deployment ID"), licInfoVal(li.DeploymentID)})
-	}
-	if len(li.APIKey) > 0 {
-		rows = append(rows, table.Row{licInfoField("API Key"), licInfoVal(li.APIKey)})
-	}
-
-	t := table.New(
-		table.WithColumns(columns),
-		table.WithRows(rows),
-		table.WithFocused(true),
-		table.WithHeight(len(rows)),
-	)
-
-	s := table.DefaultStyles()
-	s.Header = s.Header.
-		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("240")).
-		BorderBottom(true).
-		Bold(false)
-	s.Selected = s.Selected.Bold(false)
-	t.SetStyles(s)
-
-	return lipgloss.NewStyle().
-		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("240")).Render(t.View())
-}
-
 func getAGPLMessage() string {
 	return `License: GNU AGPL v3 <https://www.gnu.org/licenses/agpl-3.0.txt>
-If you are distributing or hosting MinIO along with your proprietary application as combined works, you may require a commercial license included in the Standard and Enterprise subscription plans. (https://min.io/signup?ref=mc)`
+If you are distributing or hosting Kypello along with your proprietary application as combined works, you may require to switch to a commercial license included in the MinIO AIStor Subscriptions. (https://min.io/signup?ref=mc)`
 }
 
-func initLicInfoColors() {
-	console.SetColor(licInfoMsgTag, color.New(color.FgGreen, color.Bold))
-	console.SetColor(licInfoErrTag, color.New(color.FgRed, color.Bold))
-	console.SetColor(licInfoFieldTag, color.New(color.FgCyan))
-	console.SetColor(licInfoValTag, color.New(color.FgWhite))
-}
-
-func mainLicenseInfo(ctx *cli.Context) error {
-	if len(ctx.Args()) != 1 {
-		showCommandHelpAndExit(ctx, 1) // last argument is exit code
-	}
-
-	initLicInfoColors()
-
-	aliasedURL := ctx.Args().Get(0)
-	alias, _ := initSubnetConnectivity(ctx, aliasedURL, true)
-
-	apiKey, lic, e := getSubnetCreds(alias)
-	fatalIf(probe.NewError(e), "Error in checking cluster registration status")
-
-	var lim licInfoMessage
-	if len(lic) > 0 {
-		lim = getLicInfoMsg(lic)
-	} else if len(apiKey) > 0 {
-		lim = licInfoMessage{
-			Status: "success",
-			Info: licInfo{
-				Message: fmt.Sprintf("%s is registered with SUBNET. License info not available.", alias),
-			},
-		}
-	} else {
-		// Not registered. Default to AGPLv3
-		lim = licInfoMessage{
-			Status: "success",
-			Info: licInfo{
-				Plan:    "AGPLv3",
-				Message: getAGPLMessage(),
-			},
-		}
-	}
-
-	printMsg(lim)
-	return nil
-}
-
-func getLicInfoMsg(lic string) licInfoMessage {
-	li, e := parseLicense(lic)
-	if e != nil {
-		return licErrMsg(e)
-	}
-	return licInfoMessage{
+func mainLicenseInfo(_ *cli.Context) error {
+	printMsg(licInfoMessage{
 		Status: "success",
 		Info: licInfo{
-			LicenseID:    li.LicenseID,
-			Organization: li.Organization,
-			Plan:         li.Plan,
-			IssuedAt:     &li.IssuedAt,
-			ExpiresAt:    &li.ExpiresAt,
-			DeploymentID: li.DeploymentID,
-			APIKey:       li.APIKey,
+			Plan:    "AGPLv3",
+			Message: getAGPLMessage(),
 		},
-	}
-}
-
-func licErrMsg(e error) licInfoMessage {
-	return licInfoMessage{
-		Status: "error",
-		Error:  e.Error(),
-	}
+	})
+	return nil
 }

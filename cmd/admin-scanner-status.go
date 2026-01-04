@@ -38,10 +38,10 @@ import (
 	"github.com/klauspost/compress/zstd"
 	"github.com/kypello-io/kc/pkg/probe"
 	"github.com/kypello-io/kc/pkg/twx"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/pkg/v3/console"
 )
 
 var adminScannerInfoFlags = []cli.Flag{

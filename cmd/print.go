@@ -22,7 +22,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/minio/pkg/v3/console"
+	"github.com/kypello-io/pkg/v3/console"
 )
 
 // message interface for all structured messages implementing JSON(), String() methods.

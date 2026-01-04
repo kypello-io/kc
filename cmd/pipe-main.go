@@ -26,10 +26,10 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/minio-go/v7"
-	"github.com/minio/pkg/v3/console"
 )
 
 func defaultPartSize() string {

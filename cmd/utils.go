@@ -39,7 +39,7 @@ import (
 
 	jwtgo "github.com/golang-jwt/jwt/v4"
 	"github.com/kypello-io/kc/pkg/probe"
-	"github.com/minio/pkg/v3/console"
+	"github.com/kypello-io/pkg/v3/console"
 )
 
 func isErrIgnored(err *probe.Error) (ignored bool) {

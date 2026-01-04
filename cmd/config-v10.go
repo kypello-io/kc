@@ -21,7 +21,7 @@ import (
 	"sync"
 
 	"github.com/kypello-io/kc/pkg/probe"
-	"github.com/minio/pkg/v3/quick"
+	"github.com/kypello-io/pkg/v3/quick"
 )
 
 const (

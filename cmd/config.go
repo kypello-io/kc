@@ -28,7 +28,7 @@ import (
 	"strings"
 
 	"github.com/kypello-io/kc/pkg/probe"
-	"github.com/minio/pkg/v3/env"
+	"github.com/kypello-io/pkg/v3/env"
 
 	"github.com/mitchellh/go-homedir"
 )

@@ -40,9 +40,10 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/kypello-io/pkg/v3/env"
 	"github.com/minio/minio-go/v7/pkg/cors"
-	"github.com/minio/pkg/v3/env"
 
+	"github.com/kypello-io/pkg/v3/mimedb"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/encrypt"
@@ -53,7 +54,6 @@ import (
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 	"github.com/minio/minio-go/v7/pkg/sse"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/pkg/v3/mimedb"
 
 	"github.com/kypello-io/kc/pkg/deadlineconn"
 	"github.com/kypello-io/kc/pkg/probe"

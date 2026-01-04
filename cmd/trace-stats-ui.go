@@ -31,8 +31,8 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 	"github.com/kypello-io/kc/pkg/twx"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/pkg/v3/console"
 	"github.com/muesli/reflow/truncate"
 	"golang.org/x/term"
 )

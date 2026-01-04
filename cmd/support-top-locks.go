@@ -23,10 +23,10 @@ import (
 	humanize "github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 	"github.com/kypello-io/kc/pkg/probe"
+	"github.com/kypello-io/pkg/v3/console"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
 	"github.com/minio/madmin-go/v3"
-	"github.com/minio/pkg/v3/console"
 )
 
 var supportTopLocksFlag = []cli.Flag{
@@ -139,9 +139,6 @@ func mainSupportTopLocks(ctx *cli.Context) error {
 	// Get the alias parameter from cli
 	args := ctx.Args()
 	aliasedURL := args.Get(0)
-	alias, _ := url2Alias(aliasedURL)
-	validateClusterRegistered(alias, false)
-
 	console.SetColor("StaleLock", color.New(color.FgRed, color.Bold))
 	console.SetColor("Lock", color.New(color.FgBlue, color.Bold))
 	console.SetColor("Headers", color.New(color.FgGreen, color.Bold))
