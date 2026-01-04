@@ -41,9 +41,9 @@ require (
 	github.com/posener/complete v1.2.3
 	github.com/prometheus/client_golang v1.23.2
 	github.com/prometheus/procfs v0.19.2
-	github.com/rjeczalik/notify v0.9.3
 	github.com/rs/xid v1.6.0
 	github.com/shirou/gopsutil/v3 v3.24.5
+	github.com/syncthing/notify v0.0.0-20250528144937-c7027d4f7465
 	github.com/tidwall/gjson v1.18.0
 	github.com/vbauerster/mpb/v8 v8.11.3
 	golang.org/x/net v0.48.0
@@ -239,6 +239,7 @@ require (
 	github.com/quasilyte/stdinfo v0.0.0-20220114132959-f7386bf02567 // indirect
 	github.com/raeperd/recvcheck v0.2.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/rjeczalik/notify v0.9.3 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/ryancurrah/gomodguard v1.4.1 // indirect
 	github.com/ryanrolds/sqlclosecheck v0.5.1 // indirect
