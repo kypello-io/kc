@@ -1,6 +1,6 @@
-FROM golang:1.22-alpine as build
+FROM golang:1.25-alpine as build
 
-LABEL maintainer="MinIO Inc <dev@min.io>"
+LABEL maintainer="Kypello Inc <dev@kypello.io>"
 
 ENV GOPATH /go
 ENV CGO_ENABLED 0

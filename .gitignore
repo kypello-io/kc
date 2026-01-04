@@ -13,6 +13,9 @@ mc
 .idea/
 mc.RELEASE*
 mc.gz
+kc.gz
+kc.RELEASE*
 .DS_Store
 .vscode/
 .bin/
+kc

@@ -20,9 +20,9 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"math"
 	"strconv"
 	"time"
-	"math"
 
 	"github.com/kypello-io/kc/pkg/probe"
 	json "github.com/minio/colorjson"
