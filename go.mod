@@ -37,7 +37,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/muesli/reflow v0.3.0
 	github.com/muesli/termenv v0.16.0
-	github.com/olekukonko/tablewriter v1.1.2
+	github.com/olekukonko/tablewriter v1.1.3
 	github.com/pkg/xattr v0.4.12
 	github.com/posener/complete v1.2.3
 	github.com/prometheus/client_golang v1.23.2
@@ -222,7 +222,7 @@ require (
 	github.com/nunnatsa/ginkgolinter v0.21.2 // indirect
 	github.com/olekukonko/cat v0.0.0-20250911104152-50322a0618f6 // indirect
 	github.com/olekukonko/errors v1.1.0 // indirect
-	github.com/olekukonko/ll v0.1.3 // indirect
+	github.com/olekukonko/ll v0.1.4-0.20260115111900-9e59c2286df0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
