@@ -22,7 +22,7 @@ jobs:
       GO111MODULE: on
     strategy:
       matrix:
-        go-version: [1.25.x]
+        go-version: [1.26.x]
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - name: Set up Go ${{ matrix.go-version }} on ${{ matrix.os }}
@@ -73,7 +73,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: 1.25.x
+          go-version: 1.26.x
 
       - name: Checkout code
         uses: actions/checkout@v6

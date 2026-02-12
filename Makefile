@@ -38,7 +38,7 @@ lint-fix: getdeps ## runs golangci-lint suite of linters with automatic fixes
 
 lint: getdeps
 	@echo "Running $@ check"
-	@$(GOLANGCI) run --build-tags kqueue --timeout=10m --config ./.golangci.yml
+	$(GOLANGCI) run --build-tags kqueue --timeout=10m --config ./.golangci.yml
 
 # Builds mc, runs the verifiers then runs the tests.
 check: test
