@@ -1,26 +1,19 @@
-project_name: mc
+version: 2
+
+project_name: kc
 
 release:
-   name_template: "Version {{.Version}}"
-   disable: true
-   github:
-    owner: minio
-    name: mc
+  github:
+    owner: kypello-io
+    name: kc
+  name_template: "v{{.Version}}"
+  mode: append
 
 env:
   - CGO_ENABLED=0
-  - GO111MODULE=on
-
-before:
-  hooks:
-    - make clean
-    - go generate ./...
-    - go mod tidy
-    - go mod download
 
 builds:
-  -
-    goos:
+  - goos:
       - linux
       - darwin
       - windows
@@ -34,19 +27,15 @@ builds:
       - s390x
 
     goarm:
-      - 7
+      - "7"
 
     ignore:
-      - goos: darwin
-        goarch: arm64
       - goos: darwin
         goarch: arm
       - goos: darwin
         goarch: ppc64le
       - goos: darwin
         goarch: s390x
-      - goos: windows
-        goarch: arm64
       - goos: windows
         goarch: arm
       - goos: windows
@@ -67,101 +56,79 @@ builds:
       - -trimpath
 
     ldflags:
-      - "-s -w -X github.com/kypello-io/kc/cmd.Version={{.Version}} -X github.com/kypello-io/kc/cmd.ReleaseTag={{.Tag}} -X github.com/kypello-io/kc/cmd.CommitID={{.FullCommit}} -X github.com/kypello-io/kc/cmd.ShortCommitID={{.ShortCommit}}"
+      - -s -w
+      - -X github.com/kypello-io/kc/cmd.Version={{.Version}}
+      - -X github.com/kypello-io/kc/cmd.ReleaseTag={{.Tag}}
+      - -X github.com/kypello-io/kc/cmd.CommitID={{.FullCommit}}
+      - -X github.com/kypello-io/kc/cmd.ShortCommitID={{.ShortCommit}}
+      - -X github.com/kypello-io/kc/cmd.CopyrightYear={{time "2006"}}
 
 archives:
-  -
-    format: binary
-    name_template: "{{ .Binary }}-release/{{ .Os }}-{{ .Arch }}/{{ .Binary }}.{{ .Version }}"
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}"
+    format_overrides:
+      - goos: windows
+        format: zip
 
 nfpms:
-  -
-    id: minio
-    package_name: mc
-    vendor: MinIO, Inc.
-    homepage: https://min.io/
-    maintainer: dev@min.io
-    description: MinIO Client (mc) provides a modern alternative to UNIX commands like ls, cat, cp, mirror, diff, find etc. It supports filesystems and Amazon S3 compatible cloud storage service (AWS Signature v2 and v4).
-    license: Apache 2.0
+  - id: kc
+    package_name: kc
+    vendor: Kypello
+    homepage: https://github.com/kypello-io/kc
+    maintainer: Kypello <dev@kypello.io>
+    description: Kypello Client (kc) provides a modern alternative to UNIX commands like ls, cat, cp, mirror, diff, find etc. It supports filesystems and Amazon S3 compatible cloud storage service (AWS Signature v2 and v4).
+    license: AGPL-3.0
     bindir: /usr/bin
     formats:
       - deb
       - rpm
-    overrides:
-      deb:
-        file_name_template: "{{ .Binary }}-release/debs/{{ .ProjectName }}-{{ .Version }}_{{ .Arch }}"
-        replacements:
-          arm: armv7
-        files:
-          "NOTICE": "/usr/share/mc/NOTICE"
-          "CREDITS": "/usr/share/mc/CREDITS"
-          "LICENSE": "/usr/share/mc/LICENSE"
-          "README.md": "/usr/share/mc/README.md"
-      rpm:
-        file_name_template: "{{ .Binary }}-release/rpms/{{ .ProjectName }}-{{ .Version }}.{{ .Arch }}"
-        replacements:
-          amd64: x86_64
-          arm64: aarch64
-          arm: armv7
-        files:
-          "NOTICE": "/usr/share/mc/NOTICE"
-          "CREDITS": "/usr/share/mc/CREDITS"
-          "LICENSE": "/usr/share/mc/LICENSE"
-          "README.md": "/usr/share/mc/README.md"
+      - apk
+    contents:
+      - src: LICENSE
+        dst: /usr/share/kc/LICENSE
+      - src: README.md
+        dst: /usr/share/kc/README.md
 
 checksum:
   algorithm: sha256
 
 signs:
-  -
-    signature: "${artifact}.asc"
-    cmd: "sh"
+  - cmd: cosign
+    artifacts: checksum
+    output: true
     args:
-      - '-c'
-      - 'gpg --quiet --detach-sign -a ${artifact}'
-    artifacts: all
+      - sign-blob
+      - --yes
+      - --bundle=${signature}
+      - ${artifact}
+    signature: ${artifact}.sigstore.json
+
+docker_signs:
+  - cmd: cosign
+    args:
+      - sign
+      - --yes
+      - ${artifact}
+    artifacts: manifests
+
+kos:
+  - repository: ghcr.io/kypello-io/kc
+    tags:
+      - "{{.Version}}"
+      - "{{.Tag}}"
+      - latest
+    bare: true
+    base_image: cgr.dev/chainguard/static
+    platforms:
+      - linux/amd64
+      - linux/arm64
+      - linux/arm/v7
+      - linux/ppc64le
+      - linux/s390x
+    sbom: none
+
+sboms:
+  - artifacts: archive
 
 changelog:
-  sort: asc
-  filters:
-    exclude:
-      - '^Update yaml files'
-
-dockers:
-  -
-    goos: linux
-    goarch: amd64
-    dockerfile: Dockerfile.release
-    image_templates:
-      - minio/mc:{{ .Tag }}
-      - minio/mc:latest
-
-  -
-    goos: linux
-    goarch: ppc64le
-    dockerfile: Dockerfile.ppc64le.release
-    image_templates:
-      - minio/mc:{{ .Tag }}-ppc64le
-
-  -
-    goos: linux
-    goarch: s390x
-    dockerfile: Dockerfile.s390x.release
-    image_templates:
-      - minio/mc:{{ .Tag }}-s390x
-
-  -
-    goos: linux
-    goarch: arm64
-    goarm: ''
-    dockerfile: Dockerfile.arm64.release
-    image_templates:
-      - minio/mc:{{ .Tag }}-arm64
-
-  -
-    goos: linux
-    goarch: arm
-    goarm: '7'
-    dockerfile: Dockerfile.arm.release
-    image_templates:
-      - minio/mc:{{ .Tag }}-arm
+  disable: true
