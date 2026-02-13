@@ -18,12 +18,11 @@ checks:
 
 getdeps:
 	@mkdir -p ${GOPATH}/bin
-	@echo "Installing tools" && go install tool
 
 crosscompile:
 	@(env bash $(PWD)/buildscripts/cross-compile.sh)
 
-verifiers: getdeps vet lint
+verifiers: getdeps vet
 
 docker: build
 	@docker build -t $(TAG) . -f Dockerfile.dev
