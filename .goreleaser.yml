@@ -64,11 +64,13 @@ builds:
       - -X github.com/kypello-io/kc/cmd.CopyrightYear={{time "2006"}}
 
 archives:
-  - format: tar.gz
+  - formats:
+      - tar.gz
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}"
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
 
 nfpms:
   - id: kc
@@ -112,7 +114,8 @@ docker_signs:
     artifacts: manifests
 
 kos:
-  - repository: ghcr.io/kypello-io/kc
+  - repositories:
+      - ghcr.io/kypello-io/kc
     tags:
       - "{{.Version}}"
       - "{{.Tag}}"
