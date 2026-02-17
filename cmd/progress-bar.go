@@ -31,7 +31,6 @@ import (
 // progress extender.
 type progressBar struct {
 	*pb.ProgressBar
-	proxyReader *pb.Reader
 }
 
 func newPB(total int64) *pb.ProgressBar {
@@ -76,11 +75,8 @@ func newProgressReader(r io.Reader, caption string, total int64) *pb.Reader {
 func newProgressBar(total int64) *progressBar {
 	bar := newPB(total)
 
-	// Create a proxy reader for nil reader to support Read() method
-	reader := bar.NewProxyReader(nil)
-
 	// Return new progress bar here.
-	return &progressBar{ProgressBar: bar, proxyReader: reader}
+	return &progressBar{ProgressBar: bar}
 }
 
 // Set caption.
@@ -104,13 +100,12 @@ func (p *progressBar) Get() int64 {
 }
 
 func (p *progressBar) Read(buf []byte) (n int, err error) {
-	n, err = p.proxyReader.Read(buf)
-	if err != nil {
-		return
-	}
+	// minio-go calls Read as a progress callback; just count bytes.
+	n = len(buf)
+	p.Add64(int64(n))
 
 	// Upload retry can read one object twice; Avoid read to be greater than Total
-	if t := p.Total(); t > 0 && int64(n) > t {
+	if t := p.Total(); t > 0 && p.Current() > t {
 		p.SetCurrent(t)
 	}
 
