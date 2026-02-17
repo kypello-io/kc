@@ -372,7 +372,7 @@ func (m *scannerMetricsUI) View() string {
 	var s strings.Builder
 
 	if !m.quitting {
-		s.WriteString(fmt.Sprintf("%s %s\n", console.Colorize("metrics-top-title", "Scanner Activity:"), m.spinner.View()))
+		fmt.Fprintf(&s, "%s %s\n", console.Colorize("metrics-top-title", "Scanner Activity:"), m.spinner.View())
 	}
 
 	// Set table header - akin to k8s style
