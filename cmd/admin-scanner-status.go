@@ -170,12 +170,11 @@ func (b bucketScanMsg) String() string {
 
 	if fullScan {
 		took := latestESScan.Sub(earliestESScan)
-		sb.WriteString(
-			fmt.Sprintf(
-				"%s %s (took %s)\n",
-				console.Colorize("FullScan", "Full bucket scan: "),
-				humanize.RelTime(now, latestESScan, "", "ago"),
-				fmt.Sprintf("%dd%dh%dm", int(took.Hours()/24), int(took.Hours())%24, int(took.Minutes())%60)),
+		fmt.Fprintf(&sb,
+			"%s %s (took %s)\n",
+			console.Colorize("FullScan", "Full bucket scan: "),
+			humanize.RelTime(now, latestESScan, "", "ago"),
+			fmt.Sprintf("%dd%dh%dm", int(took.Hours()/24), int(took.Hours())%24, int(took.Minutes())%60),
 		)
 	}
 
