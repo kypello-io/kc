@@ -192,11 +192,11 @@ func (e *Error) String() string {
 		callLen := len(e.CallTrace)
 		for i := callLen - 1; i >= 0; i-- {
 			if len(e.CallTrace[i].Env) > 0 {
-				str.WriteString(fmt.Sprintf("\n (%d) %s:%d %s(..) Tags: [%s]",
-					i, e.CallTrace[i].Filename, e.CallTrace[i].Line, e.CallTrace[i].Function, strings.Join(e.CallTrace[i].Env["Tags"], ", ")))
+				fmt.Fprintf(&str, "\n (%d) %s:%d %s(..) Tags: [%s]",
+					i, e.CallTrace[i].Filename, e.CallTrace[i].Line, e.CallTrace[i].Function, strings.Join(e.CallTrace[i].Env["Tags"], ", "))
 			} else {
-				str.WriteString(fmt.Sprintf("\n (%d) %s:%d %s(..)",
-					i, e.CallTrace[i].Filename, e.CallTrace[i].Line, e.CallTrace[i].Function))
+				fmt.Fprintf(&str, "\n (%d) %s:%d %s(..)",
+					i, e.CallTrace[i].Filename, e.CallTrace[i].Line, e.CallTrace[i].Function)
 			}
 		}
 

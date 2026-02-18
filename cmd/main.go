@@ -207,7 +207,7 @@ func commandNotFound(ctx *cli.Context, cmds []cli.Command) {
 		return
 	}
 	var msg strings.Builder
-	msg.WriteString(fmt.Sprintf("`%s` is not a recognized command. Get help using `--help` flag.", command))
+	fmt.Fprintf(&msg, "`%s` is not a recognized command. Get help using `--help` flag.", command)
 	commandsTree := trie.NewTrie()
 	for _, cmd := range cmds {
 		commandsTree.Insert(cmd.Name)
@@ -217,10 +217,10 @@ func commandNotFound(ctx *cli.Context, cmds []cli.Command) {
 		msg.WriteString("\n\nDid you mean one of these?\n")
 		if len(closestCommands) == 1 {
 			cmd := closestCommands[0]
-			msg.WriteString(fmt.Sprintf("        `%s`", cmd))
+			fmt.Fprintf(&msg, "        `%s`", cmd)
 		} else {
 			for _, cmd := range closestCommands {
-				msg.WriteString(fmt.Sprintf("        `%s`\n", cmd))
+				fmt.Fprintf(&msg, "        `%s`\n", cmd)
 			}
 		}
 	}
