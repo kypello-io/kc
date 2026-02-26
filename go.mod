@@ -38,7 +38,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/syncthing/notify v0.0.0-20250528144937-c7027d4f7465
 	github.com/vbauerster/mpb/v8 v8.12.0
-	golang.org/x/net v0.50.0
+	golang.org/x/net v0.51.0
 	golang.org/x/sys v0.41.0
 	golang.org/x/term v0.40.0
 	golang.org/x/text v0.34.0
