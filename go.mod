@@ -33,7 +33,7 @@ require (
 	github.com/pkg/xattr v0.4.12
 	github.com/posener/complete v1.2.3
 	github.com/prometheus/client_golang v1.23.2
-	github.com/prometheus/procfs v0.19.2
+	github.com/prometheus/procfs v0.20.1
 	github.com/rs/xid v1.6.0
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/syncthing/notify v0.0.0-20250528144937-c7027d4f7465
