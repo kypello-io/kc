@@ -41,7 +41,7 @@ require (
 	golang.org/x/net v0.52.0
 	golang.org/x/sys v0.43.0
 	golang.org/x/term v0.41.0
-	golang.org/x/text v0.35.0
+	golang.org/x/text v0.36.0
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
 )
 
