@@ -40,7 +40,7 @@ jobs:
 
       - uses: sigstore/cosign-installer@v3
 
-      - uses: ko-build/setup-ko@v0.9
+      - uses: ko-build/setup-ko@v0.10
 
       - uses: anchore/sbom-action/download-syft@v0
 
