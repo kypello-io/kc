@@ -44,12 +44,13 @@ jobs:
             exit 1
           fi
 
+      # `go get -u` pulls third-party code into this job, so BOT_PAT is kept out
+      # of .git/config and handed only to the one step that pushes. The clone
+      # itself needs no more than the default read token.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.repository.default_branch }}
-          # Persist BOT_PAT so the push below is authenticated as the bot and the
-          # resulting pull_request event triggers the Go / VulnCheck workflows.
-          token: ${{ secrets.BOT_PAT }}
+          persist-credentials: false
 
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
@@ -84,15 +85,21 @@ jobs:
           go build ./...
           go vet ./...
 
+      # The push must be authenticated as the bot: a branch pushed with
+      # GITHUB_TOKEN does not raise a pull_request event, so the PR would carry
+      # no checks to wait on.
       - name: Push the sweep
         if: steps.changes.outputs.dirty == 'true'
+        env:
+          TOKEN: ${{ secrets.BOT_PAT }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B "$BRANCH"
           git add -A
           git commit -m "build(deps): bump all dependencies"
-          git push --force origin "$BRANCH"
+          git push --force \
+            "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
 
       - name: Open or update the pull request
         if: steps.changes.outputs.dirty == 'true'
