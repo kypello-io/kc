@@ -1,0 +1,240 @@
+name: Dependencies
+
+# Sweeps every Go module (direct and indirect) and every GitHub Action up to its
+# latest release in a single pull request, closes the per-dependency Dependabot
+# PRs it supersedes, and merges itself once CI is green.
+#
+# Needs a PAT rather than GITHUB_TOKEN: pull requests opened with GITHUB_TOKEN do
+# not fire `pull_request` workflows, so the PR would carry no checks at all.
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never let two sweeps race for the same branch.
+concurrency:
+  group: deps
+  cancel-in-progress: false
+
+env:
+  BRANCH: chore/bump-deps
+  # Always sweep the default branch. A workflow_dispatch can be fired from any
+  # ref, and basing the PR on that ref would skip the Go, Crosscompile and
+  # VulnCheck workflows, which all filter `pull_request` down to master.
+  BASE: ${{ github.event.repository.default_branch }}
+  # This repository is a fork, so gh would otherwise resolve commands against
+  # the (archived) upstream rather than against this repository.
+  GH_REPO: ${{ github.repository }}
+
+jobs:
+  bump:
+    name: Bump all dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      # An empty BASE would make the checkout below silently fall back to the
+      # ref the workflow was dispatched from, which is the case this guards.
+      - name: Require a resolved default branch
+        run: |
+          if [ -z "$BASE" ]; then
+            echo "::error::default branch missing from the event payload"
+            exit 1
+          fi
+
+      # `go get -u` pulls third-party code into this job, so BOT_PAT is kept out
+      # of .git/config and handed only to the one step that pushes. The clone
+      # itself needs no more than the default read token.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          check-latest: true
+
+      # Snapshot before the sweep runs. A Dependabot PR opened while this run
+      # sits in CI is not covered by the sweep and must not be closed as
+      # superseded by it.
+      - name: Note the pull requests this sweep replaces
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+        run: |
+          gh pr list --state open --limit 100 --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("dependabot/")) | .number' \
+            >/tmp/superseded.txt
+          echo "covered by this sweep:" && cat /tmp/superseded.txt
+
+      - name: Upgrade Go modules
+        run: |
+          # -t reaches modules used only by tests; gopkg.in/check.v1 is a direct
+          # require that no non-test file imports, and plain `go get -u` skips it.
+          go get -u -t ./...
+          go mod tidy
+          # Captured before anything is committed, for the pull request body.
+          git diff -- go.mod >/tmp/gomod.diff
+
+      - name: Upgrade GitHub Actions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./buildscripts/bump-actions.sh | tee /tmp/actions.log
+
+      - name: Stop early when nothing moved
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "No dependency updates available."
+            echo "dirty=false" >>"$GITHUB_OUTPUT"
+          else
+            echo "dirty=true" >>"$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify the sweep compiles
+        if: steps.changes.outputs.dirty == 'true'
+        run: |
+          go build ./...
+          go vet ./...
+
+      # The push must be authenticated as the bot: a branch pushed with
+      # GITHUB_TOKEN does not raise a pull_request event, so the PR would carry
+      # no checks to wait on.
+      - name: Push the sweep
+        if: steps.changes.outputs.dirty == 'true'
+        id: push
+        env:
+          TOKEN: ${{ secrets.BOT_PAT }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add -A
+          git commit -m "build(deps): bump all dependencies"
+          git push --force \
+            "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
+          echo "sha=$(git rev-parse HEAD)" >>"$GITHUB_OUTPUT"
+
+      - name: Open or update the pull request
+        if: steps.changes.outputs.dirty == 'true'
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+        run: |
+          {
+            echo "Single sweep of every Go module and GitHub Action to its latest release."
+            echo
+            echo '### Go modules'
+            echo '```diff'
+            cat /tmp/gomod.diff
+            echo '```'
+            echo
+            echo '### GitHub Actions'
+            echo '```'
+            cat /tmp/actions.log
+            echo '```'
+            echo
+            echo "Opened by the \`Dependencies\` workflow."
+          } >/tmp/body.md
+
+          number="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')"
+          if [ -n "$number" ]; then
+            gh pr edit "$number" --title "build(deps): bump all dependencies" --body-file /tmp/body.md
+          else
+            number="$(gh pr create \
+              --base "$BASE" \
+              --head "$BRANCH" \
+              --title "build(deps): bump all dependencies" \
+              --body-file /tmp/body.md \
+              | grep -oE '[0-9]+$')"
+          fi
+          echo "number=${number}" >>"$GITHUB_OUTPUT"
+
+      # `master` has no required status checks, so `gh pr merge --auto` would
+      # merge instantly. Wait for the checks to actually report instead.
+      - name: Wait for CI
+        if: steps.changes.outputs.dirty == 'true'
+        id: ci
+        continue-on-error: true
+        timeout-minutes: 60
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+          PR: ${{ steps.pr.outputs.number }}
+          SHA: ${{ steps.push.outputs.sha }}
+        run: |
+          # `gh pr checks --watch` returns as soon as nothing in the rollup is
+          # pending. A third-party check that registers and passes in seconds -
+          # Socket completed 4s after the Actions runs were created on the last
+          # push - can therefore make a rollup that holds no Go job at all look
+          # green, and master has no required status checks to catch it.
+          #
+          # Gate on the same rollup `--watch` reads, not on /actions/runs: a
+          # workflow run existing does not mean its jobs are in the rollup yet.
+          required=(
+            '^Lint$'
+            '^Analysis$'
+            '^vetchecks$'
+            '^Build Tests with Go .* on ubuntu-latest$'
+            '^Test on Go .* and ubuntu-latest$'
+            '^Test on Go .* and macos-latest$'
+            '^Test on Go .* and windows-latest$'
+          )
+          missing=1
+          for _ in $(seq 1 40); do
+            names="$(gh pr checks "$PR" --json name --jq '.[].name' 2>/dev/null || true)"
+            missing=0
+            for pattern in "${required[@]}"; do
+              if ! grep -qE "$pattern" <<<"$names"; then
+                missing=1
+              fi
+            done
+            if [ "$missing" -eq 0 ]; then
+              break
+            fi
+            sleep 15
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::expected checks never appeared on #${PR}; not merging"
+            echo "saw:"
+            echo "$names"
+            exit 1
+          fi
+
+          gh pr checks "$PR" --watch --fail-fast --interval 30
+
+      - name: Merge
+        if: steps.changes.outputs.dirty == 'true' && steps.ci.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+          PR: ${{ steps.pr.outputs.number }}
+          SHA: ${{ steps.push.outputs.sha }}
+        # chore/bump-deps is a force-push target, so bind the merge to the exact
+        # commit the checks above passed on.
+        run: gh pr merge "$PR" --squash --delete-branch --match-head-commit "$SHA"
+
+      # Only once the replacement is actually on the default branch. Closing
+      # earlier would discard every Dependabot PR - branches included - whenever
+      # one unrelated dependency reddens the aggregate sweep.
+      - name: Close superseded Dependabot pull requests
+        if: steps.changes.outputs.dirty == 'true' && steps.ci.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          while read -r n; do
+            if [ -z "$n" ] || [ "$n" = "$PR" ]; then
+              continue
+            fi
+            echo "closing #${n}"
+            gh pr close "$n" --delete-branch \
+              --comment "Superseded by #${PR}, which bumps every dependency in one sweep."
+          done </tmp/superseded.txt
+
+      - name: Report a red sweep
+        if: steps.changes.outputs.dirty == 'true' && steps.ci.outcome != 'success'
+        env:
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          echo "::warning::PR #${PR} is not green; left open for review."
