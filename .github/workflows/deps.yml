@@ -21,6 +21,10 @@ concurrency:
 
 env:
   BRANCH: chore/bump-deps
+  # Always sweep the default branch. A workflow_dispatch can be fired from any
+  # ref, and basing the PR on that ref would skip the Go, Crosscompile and
+  # VulnCheck workflows, which all filter `pull_request` down to master.
+  BASE: ${{ github.event.repository.default_branch }}
   # This repository is a fork, so gh would otherwise resolve commands against
   # the (archived) upstream rather than against this repository.
   GH_REPO: ${{ github.repository }}
@@ -33,6 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event.repository.default_branch }}
           # Persist BOT_PAT so the push below is authenticated as the bot and the
           # resulting pull_request event triggers the Go / VulnCheck workflows.
           token: ${{ secrets.BOT_PAT }}
@@ -107,30 +112,13 @@ jobs:
             gh pr edit "$number" --title "build(deps): bump all dependencies" --body-file /tmp/body.md
           else
             number="$(gh pr create \
-              --base "$GITHUB_REF_NAME" \
+              --base "$BASE" \
               --head "$BRANCH" \
               --title "build(deps): bump all dependencies" \
               --body-file /tmp/body.md \
               | grep -oE '[0-9]+$')"
           fi
           echo "number=${number}" >>"$GITHUB_OUTPUT"
-
-      - name: Close superseded Dependabot pull requests
-        if: steps.changes.outputs.dirty == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.BOT_PAT }}
-          PR: ${{ steps.pr.outputs.number }}
-        run: |
-          gh pr list --state open --limit 100 --json number,headRefName \
-            --jq '.[] | select(.headRefName | startswith("dependabot/")) | .number' |
-            while read -r n; do
-              if [ "$n" = "$PR" ]; then
-                continue
-              fi
-              echo "closing #${n}"
-              gh pr close "$n" --delete-branch \
-                --comment "Superseded by #${PR}, which bumps every dependency in one sweep."
-            done
 
       # `master` has no required status checks, so `gh pr merge --auto` would merge
       # instantly. Wait for the checks to actually report instead.
@@ -156,6 +144,26 @@ jobs:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
           PR: ${{ steps.pr.outputs.number }}
         run: gh pr merge "$PR" --squash --delete-branch
+
+      # Only once the replacement is actually on the default branch. Closing
+      # earlier would discard every Dependabot PR - branches included - whenever
+      # one unrelated dependency reddens the aggregate sweep.
+      - name: Close superseded Dependabot pull requests
+        if: steps.changes.outputs.dirty == 'true' && steps.ci.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          gh pr list --state open --limit 100 --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("dependabot/")) | .number' |
+            while read -r n; do
+              if [ "$n" = "$PR" ]; then
+                continue
+              fi
+              echo "closing #${n}"
+              gh pr close "$n" --delete-branch \
+                --comment "Superseded by #${PR}, which bumps every dependency in one sweep."
+            done
 
       - name: Report a red sweep
         if: steps.changes.outputs.dirty == 'true' && steps.ci.outcome != 'success'
