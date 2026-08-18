@@ -17,13 +17,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Bumps every `uses:` reference in .github/workflows to the latest published
-# release, preserving whatever pin style each line already uses:
+# Bumps every `uses:` reference in .github/workflows to the commit behind the
+# latest published release:
 #
-#   uses: owner/repo@v6                 ->  @v7                  (major only)
-#   uses: owner/repo@v0.9               ->  @v0.10               (major.minor)
-#   uses: owner/repo@v1.0.2             ->  @v2.0.0              (full tag)
-#   uses: owner/repo@<sha> # v6.0.1     ->  @<sha> # v7.0.1      (commit pin)
+#   uses: owner/repo@v6              ->  uses: owner/repo@<sha> # v7.0.1
+#   uses: owner/repo@<sha> # v0.5.3  ->  uses: owner/repo@<sha> # v0.6.2
+#
+# Everything is pinned to a hash because that is what the repository's zizmor
+# policy requires; the trailing comment carries the human-readable version.
 #
 # It also bumps the `version:` input of golangci/golangci-lint-action, which
 # pins the linter binary rather than the action.
@@ -71,21 +72,9 @@ function tag_sha() {
     gh api "repos/${repo}/commits/${tag}" --jq '.sha' </dev/null 2>/dev/null || true
 }
 
-## Narrow a full semver tag down to the precision the existing pin used, so that
-## a floating `@v6` stays floating and a `@v1.0.2` stays fully qualified.
-function match_precision() {
-    local current="$1" latest="$2"
-    case "$current" in
-    v[0-9]*.[0-9]*.[0-9]*) echo "$latest" ;;
-    v[0-9]*.[0-9]*) echo "$latest" | cut -d. -f1,2 ;;
-    v[0-9]*) echo "$latest" | cut -d. -f1 ;;
-    *) echo "$latest" ;;
-    esac
-}
-
 ## Rewrite the `uses:` lines of a single workflow file in place.
 function bump_uses() {
-    local file="$1" line action ref comment repo latest narrowed sha key summary
+    local file="$1" line action ref repo latest sha key summary
 
     # Read on fd 3: `gh` runs inside this loop and would otherwise drain stdin.
     while IFS= read -r line <&3; do
@@ -93,7 +82,6 @@ function bump_uses() {
         [[ "$line" =~ uses:[[:space:]]+([^[:space:]@]+)@([^[:space:]]+)(.*)$ ]] || continue
         action="${BASH_REMATCH[1]}"
         ref="${BASH_REMATCH[2]}"
-        comment="${BASH_REMATCH[3]}"
 
         # Local (./path) and container (docker://) actions are not versioned here.
         case "$action" in
@@ -127,25 +115,17 @@ function bump_uses() {
             continue
         fi
 
-        if [[ "$ref" =~ ^[0-9a-f]{40}$ ]]; then
-            sha="$(tag_sha "$repo" "$latest")"
-            if [ -z "$sha" ]; then
-                echo "  ?? ${action}@${ref} (could not resolve ${latest}, skipped)"
-                continue
-            fi
-            if [ "$sha" = "$ref" ]; then
-                continue
-            fi
-            RESOLVED[$key]="uses: ${action}@${sha} # ${latest}"
-            summary="  -> ${action}: ${ref:0:7} -> ${sha:0:7} (${latest})"
-        else
-            narrowed="$(match_precision "$ref" "$latest")"
-            if [ "$narrowed" = "$ref" ]; then
-                continue
-            fi
-            RESOLVED[$key]="uses: ${action}@${narrowed}${comment}"
-            summary="  -> ${action}: ${ref} -> ${narrowed}"
+        sha="$(tag_sha "$repo" "$latest")"
+        if [ -z "$sha" ]; then
+            echo "  ?? ${action}@${ref} (could not resolve ${latest}, skipped)"
+            continue
         fi
+        if [ "$sha" = "$ref" ]; then
+            continue
+        fi
+
+        RESOLVED[$key]="uses: ${action}@${sha} # ${latest}"
+        summary="  -> ${action}: ${ref} -> ${sha:0:7} (${latest})"
 
         replace_ref "$file" "$action" "$ref" "${RESOLVED[$key]}"
         echo "$summary"
