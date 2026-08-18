@@ -103,7 +103,7 @@ require (
 	github.com/prometheus/prom2json v1.5.0 // indirect
 	github.com/prometheus/prometheus v0.314.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/rogpeppe/go-internal v1.14.1 // indirect
+	github.com/rogpeppe/go-internal v1.16.0 // indirect
 	github.com/safchain/ethtool v0.7.0 // indirect
 	github.com/secure-io/sio-go v0.3.1 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect

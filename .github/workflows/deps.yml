@@ -71,7 +71,9 @@ jobs:
 
       - name: Upgrade Go modules
         run: |
-          go get -u ./...
+          # -t reaches modules used only by tests; gopkg.in/check.v1 is a direct
+          # require that no non-test file imports, and plain `go get -u` skips it.
+          go get -u -t ./...
           go mod tidy
           # Captured before anything is committed, for the pull request body.
           git diff -- go.mod >/tmp/gomod.diff
@@ -162,28 +164,43 @@ jobs:
           PR: ${{ steps.pr.outputs.number }}
           SHA: ${{ steps.push.outputs.sha }}
         run: |
-          # A fast third-party check can register and pass seconds before GitHub
-          # has created check runs for the workflows that actually validate the
-          # sweep, and `master` has no required status checks to catch that. So
-          # confirm each validating workflow has a run for this exact commit
-          # before letting the check set decide anything.
-          for wf in Go Crosscompile VulnCheck; do
-            started=false
-            for _ in $(seq 1 20); do
-              count="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${SHA}" \
-                --jq "[.workflow_runs[] | select(.name == \"${wf}\")] | length")"
-              if [ "${count:-0}" -gt 0 ]; then
-                started=true
-                break
+          # `gh pr checks --watch` returns as soon as nothing in the rollup is
+          # pending. A third-party check that registers and passes in seconds -
+          # Socket completed 4s after the Actions runs were created on the last
+          # push - can therefore make a rollup that holds no Go job at all look
+          # green, and master has no required status checks to catch it.
+          #
+          # Gate on the same rollup `--watch` reads, not on /actions/runs: a
+          # workflow run existing does not mean its jobs are in the rollup yet.
+          required=(
+            '^Lint$'
+            '^Analysis$'
+            '^vetchecks$'
+            '^Build Tests with Go .* on ubuntu-latest$'
+            '^Test on Go .* and ubuntu-latest$'
+            '^Test on Go .* and macos-latest$'
+            '^Test on Go .* and windows-latest$'
+          )
+          missing=1
+          for _ in $(seq 1 40); do
+            names="$(gh pr checks "$PR" --json name --jq '.[].name' 2>/dev/null || true)"
+            missing=0
+            for pattern in "${required[@]}"; do
+              if ! grep -qE "$pattern" <<<"$names"; then
+                missing=1
               fi
-              sleep 15
             done
-            if [ "$started" != true ]; then
-              echo "::error::workflow ${wf} never started for ${SHA}"
-              exit 1
+            if [ "$missing" -eq 0 ]; then
+              break
             fi
-            echo "${wf} started"
+            sleep 15
           done
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::expected checks never appeared on #${PR}; not merging"
+            echo "saw:"
+            echo "$names"
+            exit 1
+          fi
 
           gh pr checks "$PR" --watch --fail-fast --interval 30
 
@@ -192,7 +209,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
           PR: ${{ steps.pr.outputs.number }}
-        run: gh pr merge "$PR" --squash --delete-branch
+          SHA: ${{ steps.push.outputs.sha }}
+        # chore/bump-deps is a force-push target, so bind the merge to the exact
+        # commit the checks above passed on.
+        run: gh pr merge "$PR" --squash --delete-branch --match-head-commit "$SHA"
 
       # Only once the replacement is actually on the default branch. Closing
       # earlier would discard every Dependabot PR - branches included - whenever
