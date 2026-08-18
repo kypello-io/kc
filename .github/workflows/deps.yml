@@ -1,0 +1,165 @@
+name: Dependencies
+
+# Sweeps every Go module (direct and indirect) and every GitHub Action up to its
+# latest release in a single pull request, closes the per-dependency Dependabot
+# PRs it supersedes, and merges itself once CI is green.
+#
+# Needs a PAT rather than GITHUB_TOKEN: pull requests opened with GITHUB_TOKEN do
+# not fire `pull_request` workflows, so the PR would carry no checks at all.
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never let two sweeps race for the same branch.
+concurrency:
+  group: deps
+  cancel-in-progress: false
+
+env:
+  BRANCH: chore/bump-deps
+  # This repository is a fork, so gh would otherwise resolve commands against
+  # the (archived) upstream rather than against this repository.
+  GH_REPO: ${{ github.repository }}
+
+jobs:
+  bump:
+    name: Bump all dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Persist BOT_PAT so the push below is authenticated as the bot and the
+          # resulting pull_request event triggers the Go / VulnCheck workflows.
+          token: ${{ secrets.BOT_PAT }}
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          check-latest: true
+
+      - name: Upgrade Go modules
+        run: |
+          go get -u ./...
+          go mod tidy
+          # Captured before anything is committed, for the pull request body.
+          git diff -- go.mod >/tmp/gomod.diff
+
+      - name: Upgrade GitHub Actions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./buildscripts/bump-actions.sh | tee /tmp/actions.log
+
+      - name: Stop early when nothing moved
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "No dependency updates available."
+            echo "dirty=false" >>"$GITHUB_OUTPUT"
+          else
+            echo "dirty=true" >>"$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify the sweep compiles
+        if: steps.changes.outputs.dirty == 'true'
+        run: |
+          go build ./...
+          go vet ./...
+
+      - name: Push the sweep
+        if: steps.changes.outputs.dirty == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add -A
+          git commit -m "build(deps): bump all dependencies"
+          git push --force origin "$BRANCH"
+
+      - name: Open or update the pull request
+        if: steps.changes.outputs.dirty == 'true'
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+        run: |
+          {
+            echo "Single sweep of every Go module and GitHub Action to its latest release."
+            echo
+            echo '### Go modules'
+            echo '```diff'
+            cat /tmp/gomod.diff
+            echo '```'
+            echo
+            echo '### GitHub Actions'
+            echo '```'
+            cat /tmp/actions.log
+            echo '```'
+            echo
+            echo "Opened by the \`Dependencies\` workflow."
+          } >/tmp/body.md
+
+          number="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')"
+          if [ -n "$number" ]; then
+            gh pr edit "$number" --title "build(deps): bump all dependencies" --body-file /tmp/body.md
+          else
+            number="$(gh pr create \
+              --base "$GITHUB_REF_NAME" \
+              --head "$BRANCH" \
+              --title "build(deps): bump all dependencies" \
+              --body-file /tmp/body.md \
+              | grep -oE '[0-9]+$')"
+          fi
+          echo "number=${number}" >>"$GITHUB_OUTPUT"
+
+      - name: Close superseded Dependabot pull requests
+        if: steps.changes.outputs.dirty == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          gh pr list --state open --limit 100 --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("dependabot/")) | .number' |
+            while read -r n; do
+              if [ "$n" = "$PR" ]; then
+                continue
+              fi
+              echo "closing #${n}"
+              gh pr close "$n" --delete-branch \
+                --comment "Superseded by #${PR}, which bumps every dependency in one sweep."
+            done
+
+      # `master` has no required status checks, so `gh pr merge --auto` would merge
+      # instantly. Wait for the checks to actually report instead.
+      - name: Wait for CI
+        if: steps.changes.outputs.dirty == 'true'
+        id: ci
+        continue-on-error: true
+        timeout-minutes: 60
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          # Runs take up to a minute to be registered against a fresh commit.
+          for _ in $(seq 1 10); do
+            gh pr checks "$PR" >/dev/null 2>&1 && break
+            sleep 30
+          done
+          gh pr checks "$PR" --watch --fail-fast --interval 30
+
+      - name: Merge
+        if: steps.changes.outputs.dirty == 'true' && steps.ci.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: gh pr merge "$PR" --squash --delete-branch
+
+      - name: Report a red sweep
+        if: steps.changes.outputs.dirty == 'true' && steps.ci.outcome != 'success'
+        env:
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          echo "::warning::PR #${PR} is not green; left open for review."
