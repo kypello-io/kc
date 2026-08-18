@@ -56,20 +56,39 @@ function checkdeps() {
 }
 
 ## Latest release tag for a repository. Falls back to the most recent tag for
-## repositories that publish tags without GitHub releases.
+## repositories that publish tags without GitHub releases. Retries, then fails:
+## a silently skipped action would leave the sweep incomplete while the caller
+## still closes the Dependabot PR that covered it.
 function latest_tag() {
-    local repo="$1" tag
-    tag="$(gh api "repos/${repo}/releases/latest" --jq '.tag_name' </dev/null 2>/dev/null || true)"
-    if [ -z "$tag" ]; then
+    local repo="$1" tag attempt
+    for attempt in 1 2 3; do
+        tag="$(gh api "repos/${repo}/releases/latest" --jq '.tag_name' </dev/null 2>/dev/null || true)"
+        if [ -n "$tag" ]; then
+            echo "$tag"
+            return 0
+        fi
         tag="$(gh api "repos/${repo}/tags" --jq '.[0].name' </dev/null 2>/dev/null || true)"
-    fi
-    echo "$tag"
+        if [ -n "$tag" ]; then
+            echo "$tag"
+            return 0
+        fi
+        sleep $((attempt * 3))
+    done
+    return 1
 }
 
 ## Commit SHA a tag points at. Works for lightweight and annotated tags alike.
 function tag_sha() {
-    local repo="$1" tag="$2"
-    gh api "repos/${repo}/commits/${tag}" --jq '.sha' </dev/null 2>/dev/null || true
+    local repo="$1" tag="$2" sha attempt
+    for attempt in 1 2 3; do
+        sha="$(gh api "repos/${repo}/commits/${tag}" --jq '.sha' </dev/null 2>/dev/null || true)"
+        if [ -n "$sha" ]; then
+            echo "$sha"
+            return 0
+        fi
+        sleep $((attempt * 3))
+    done
+    return 1
 }
 
 ## Rewrite the `uses:` lines of a single workflow file in place.
@@ -109,16 +128,14 @@ function bump_uses() {
         # Strip any subpath: anchore/sbom-action/download-syft -> anchore/sbom-action
         repo="$(echo "$action" | cut -d/ -f1,2)"
 
-        latest="$(latest_tag "$repo")"
-        if [ -z "$latest" ]; then
-            echo "  ?? ${action}@${ref} (no releases or tags found, skipped)"
-            continue
+        if ! latest="$(latest_tag "$repo")"; then
+            echo "error: no release or tag found for ${repo}" >&2
+            return 1
         fi
 
-        sha="$(tag_sha "$repo" "$latest")"
-        if [ -z "$sha" ]; then
-            echo "  ?? ${action}@${ref} (could not resolve ${latest}, skipped)"
-            continue
+        if ! sha="$(tag_sha "$repo" "${latest}")"; then
+            echo "error: could not resolve ${repo}@${latest} to a commit" >&2
+            return 1
         fi
         if [ "$sha" = "$ref" ]; then
             continue
@@ -149,8 +166,11 @@ function bump_golangci_lint() {
         return 0
     fi
 
-    latest="$(latest_tag golangci/golangci-lint)"
-    if [ -z "$latest" ] || [ "$latest" = "$current" ]; then
+    if ! latest="$(latest_tag golangci/golangci-lint)"; then
+        echo "error: could not resolve the latest golangci-lint release" >&2
+        return 1
+    fi
+    if [ "$latest" = "$current" ]; then
         return 0
     fi
 

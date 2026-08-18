@@ -57,6 +57,18 @@ jobs:
           go-version-file: go.mod
           check-latest: true
 
+      # Snapshot before the sweep runs. A Dependabot PR opened while this run
+      # sits in CI is not covered by the sweep and must not be closed as
+      # superseded by it.
+      - name: Note the pull requests this sweep replaces
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+        run: |
+          gh pr list --state open --limit 100 --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("dependabot/")) | .number' \
+            >/tmp/superseded.txt
+          echo "covered by this sweep:" && cat /tmp/superseded.txt
+
       - name: Upgrade Go modules
         run: |
           go get -u ./...
@@ -90,6 +102,7 @@ jobs:
       # no checks to wait on.
       - name: Push the sweep
         if: steps.changes.outputs.dirty == 'true'
+        id: push
         env:
           TOKEN: ${{ secrets.BOT_PAT }}
         run: |
@@ -100,6 +113,7 @@ jobs:
           git commit -m "build(deps): bump all dependencies"
           git push --force \
             "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
+          echo "sha=$(git rev-parse HEAD)" >>"$GITHUB_OUTPUT"
 
       - name: Open or update the pull request
         if: steps.changes.outputs.dirty == 'true'
@@ -136,8 +150,8 @@ jobs:
           fi
           echo "number=${number}" >>"$GITHUB_OUTPUT"
 
-      # `master` has no required status checks, so `gh pr merge --auto` would merge
-      # instantly. Wait for the checks to actually report instead.
+      # `master` has no required status checks, so `gh pr merge --auto` would
+      # merge instantly. Wait for the checks to actually report instead.
       - name: Wait for CI
         if: steps.changes.outputs.dirty == 'true'
         id: ci
@@ -146,12 +160,31 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
           PR: ${{ steps.pr.outputs.number }}
+          SHA: ${{ steps.push.outputs.sha }}
         run: |
-          # Runs take up to a minute to be registered against a fresh commit.
-          for _ in $(seq 1 10); do
-            gh pr checks "$PR" >/dev/null 2>&1 && break
-            sleep 30
+          # A fast third-party check can register and pass seconds before GitHub
+          # has created check runs for the workflows that actually validate the
+          # sweep, and `master` has no required status checks to catch that. So
+          # confirm each validating workflow has a run for this exact commit
+          # before letting the check set decide anything.
+          for wf in Go Crosscompile VulnCheck; do
+            started=false
+            for _ in $(seq 1 20); do
+              count="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${SHA}" \
+                --jq "[.workflow_runs[] | select(.name == \"${wf}\")] | length")"
+              if [ "${count:-0}" -gt 0 ]; then
+                started=true
+                break
+              fi
+              sleep 15
+            done
+            if [ "$started" != true ]; then
+              echo "::error::workflow ${wf} never started for ${SHA}"
+              exit 1
+            fi
+            echo "${wf} started"
           done
+
           gh pr checks "$PR" --watch --fail-fast --interval 30
 
       - name: Merge
@@ -170,16 +203,14 @@ jobs:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
           PR: ${{ steps.pr.outputs.number }}
         run: |
-          gh pr list --state open --limit 100 --json number,headRefName \
-            --jq '.[] | select(.headRefName | startswith("dependabot/")) | .number' |
-            while read -r n; do
-              if [ "$n" = "$PR" ]; then
-                continue
-              fi
-              echo "closing #${n}"
-              gh pr close "$n" --delete-branch \
-                --comment "Superseded by #${PR}, which bumps every dependency in one sweep."
-            done
+          while read -r n; do
+            if [ -z "$n" ] || [ "$n" = "$PR" ]; then
+              continue
+            fi
+            echo "closing #${n}"
+            gh pr close "$n" --delete-branch \
+              --comment "Superseded by #${PR}, which bumps every dependency in one sweep."
+          done </tmp/superseded.txt
 
       - name: Report a red sweep
         if: steps.changes.outputs.dirty == 'true' && steps.ci.outcome != 'success'
