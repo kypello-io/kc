@@ -163,11 +163,20 @@ cosign verify-blob --bundle checksums.txt.sigstore.json \
 
 ### Container Images
 
+Requires **cosign v3 or newer**. From `v1.0.5` on, image signatures are
+[Sigstore bundles](https://github.com/sigstore/protobuf-specs) stored as OCI 1.1
+referring artifacts, which is cosign v3's default. cosign v2 looks for the older
+`sha256-<digest>.sig` tag and reports `no signatures found`. Releases up to
+`v1.0.4` carry the legacy format and still verify with cosign v2.
+
 ```bash
 cosign verify ghcr.io/kypello-io/kc:latest \
   --certificate-identity-regexp 'https://github.com/kypello-io/kc/.*' \
   --certificate-oidc-issuer 'https://token.actions.githubusercontent.com'
 ```
+
+The checksum signature above is unaffected: `verify-blob` reads the bundle with
+either version.
 
 ## Add a Cloud Storage Service
 If you are planning to use `kc` only on POSIX compatible filesystems, you may skip this step and proceed to [everyday use](#everyday-use).
