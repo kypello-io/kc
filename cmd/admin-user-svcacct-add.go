@@ -269,7 +269,7 @@ func (u acctMessage) JSON() string {
 	return string(jsonMessageBytes)
 }
 
-// mainAdminUserSvcAcctAdd is the handle for "mc admin user svcacct add" command.
+// mainAdminUserSvcAcctAdd is the handle for "kc admin user svcacct add" command.
 func mainAdminUserSvcAcctAdd(ctx *cli.Context) error {
 	checkAdminUserSvcAcctAddSyntax(ctx)
 

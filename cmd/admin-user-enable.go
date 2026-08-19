@@ -54,7 +54,7 @@ func checkAdminUserEnableSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminUserEnable is the handle for "mc admin user enable" command.
+// mainAdminUserEnable is the handle for "kc admin user enable" command.
 func mainAdminUserEnable(ctx *cli.Context) error {
 	checkAdminUserEnableSyntax(ctx)
 

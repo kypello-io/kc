@@ -57,7 +57,7 @@ func checkAdminPolicyRemoveSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminPolicyRemove is the handle for "mc admin policy remove" command.
+// mainAdminPolicyRemove is the handle for "kc admin policy remove" command.
 func mainAdminPolicyRemove(ctx *cli.Context) error {
 	checkAdminPolicyRemoveSyntax(ctx)
 

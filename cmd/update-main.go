@@ -28,7 +28,7 @@ import (
 
 // releasesURL is where kc releases are published. kc does not replace its own
 // binary: upstream mc self-updated from dl.min.io, which for this fork would
-// have downloaded MinIO's mc and installed it over kc.
+// have downloaded MinIO's kc and installed it over kc.
 const releasesURL = "https://github.com/kypello-io/kc/releases/latest"
 
 // Report where to obtain new releases.

@@ -54,7 +54,7 @@ func checkAdminUserDisableSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminUserDisable is the handle for "mc admin user disable" command.
+// mainAdminUserDisable is the handle for "kc admin user disable" command.
 func mainAdminUserDisable(ctx *cli.Context) error {
 	checkAdminUserDisableSyntax(ctx)
 

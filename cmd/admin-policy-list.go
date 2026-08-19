@@ -54,7 +54,7 @@ func checkAdminPolicyListSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminPolicyList is the handle for "mc admin policy add" command.
+// mainAdminPolicyList is the handle for "kc admin policy add" command.
 func mainAdminPolicyList(ctx *cli.Context) error {
 	checkAdminPolicyListSyntax(ctx)
 

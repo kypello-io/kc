@@ -54,7 +54,7 @@ func checkQuotaClearSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainQuotaClear is the handler for "mc quota clear" command.
+// mainQuotaClear is the handler for "kc quota clear" command.
 func mainQuotaClear(ctx *cli.Context) error {
 	checkQuotaClearSyntax(ctx)
 

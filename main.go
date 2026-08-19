@@ -20,12 +20,12 @@ package main // import "github.com/kypello-io/kc"
 import (
 	"os"
 
-	mc "github.com/kypello-io/kc/cmd"
+	kc "github.com/kypello-io/kc/cmd"
 	"github.com/kypello-io/pkg/v3/console"
 )
 
 func main() {
-	if e := mc.Main(os.Args); e != nil {
+	if e := kc.Main(os.Args); e != nil {
 		console.Fatalln(e)
 	}
 }

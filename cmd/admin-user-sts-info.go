@@ -43,7 +43,7 @@ var adminUserSTSAcctCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainAdminUserSTSAcct is the handle for "mc admin user sts" command.
+// mainAdminUserSTSAcct is the handle for "kc admin user sts" command.
 func mainAdminUserSTSAcct(ctx *cli.Context) error {
 	commandNotFound(ctx, adminUserSTSAcctSubcommands)
 	return nil
@@ -85,7 +85,7 @@ func checkAdminUserSTSAcctInfoSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminUserSTSAcctInfo is the handle for "mc admin user sts info" command.
+// mainAdminUserSTSAcctInfo is the handle for "kc admin user sts info" command.
 func mainAdminUserSTSAcctInfo(ctx *cli.Context) error {
 	checkAdminUserSTSAcctInfoSyntax(ctx)
 

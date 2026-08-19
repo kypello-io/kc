@@ -79,7 +79,7 @@ func checkBatchStartSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainBatchStart is the handle for "mc batch create" command.
+// mainBatchStart is the handle for "kc batch create" command.
 func mainBatchStart(ctx *cli.Context) error {
 	checkBatchStartSyntax(ctx)
 

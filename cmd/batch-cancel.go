@@ -84,7 +84,7 @@ func checkBatchCancelSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainBatchCancel is the handle for "mc batch cancel" command.
+// mainBatchCancel is the handle for "kc batch cancel" command.
 func mainBatchCancel(ctx *cli.Context) error {
 	checkBatchCancelSyntax(ctx)
 

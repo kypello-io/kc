@@ -37,11 +37,11 @@ var adminSpeedtestCmd = cli.Command{
 	Before:             setGlobalsFromContext,
 	HideHelpCommand:    true,
 	Hidden:             true,
-	CustomHelpTemplate: "Please use 'mc support perf'",
+	CustomHelpTemplate: "Please use 'kc support perf'",
 }
 
 func mainAdminSpeedtest(_ *cli.Context) error {
-	deprecatedError("mc support perf")
+	deprecatedError("kc support perf")
 	return nil
 }
 

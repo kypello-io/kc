@@ -29,11 +29,11 @@ var adminInspectCmd = cli.Command{
 	Before:             setGlobalsFromContext,
 	HideHelpCommand:    true,
 	Hidden:             true,
-	CustomHelpTemplate: "Please use 'mc support inspect'",
+	CustomHelpTemplate: "Please use 'kc support inspect'",
 }
 
 // mainAdminHeal - the entry function of heal command
 func mainAdminInspect(_ *cli.Context) error {
-	deprecatedError("mc support inspect")
+	deprecatedError("kc support inspect")
 	return nil
 }

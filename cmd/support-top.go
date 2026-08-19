@@ -37,7 +37,7 @@ var supportTopCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainSupportTop is the handle for "mc support top" command.
+// mainSupportTop is the handle for "kc support top" command.
 func mainSupportTop(ctx *cli.Context) error {
 	commandNotFound(ctx, supportTopSubcommands)
 	return nil

@@ -29,11 +29,11 @@ var adminProfileStartCmd = cli.Command{
 	Before:             setGlobalsFromContext,
 	HideHelpCommand:    true,
 	Hidden:             true,
-	CustomHelpTemplate: "Please use 'mc support profile start'",
+	CustomHelpTemplate: "Please use 'kc support profile start'",
 }
 
 // mainAdminProfileStart - the entry function of profile command
 func mainAdminProfileStart(_ *cli.Context) error {
-	deprecatedError("mc support profile start")
+	deprecatedError("kc support profile start")
 	return nil
 }

@@ -85,7 +85,7 @@ func checkAdminUserSvcAcctSetSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminUserSvcAcctSet is the handle for "mc admin user svcacct set" command.
+// mainAdminUserSvcAcctSet is the handle for "kc admin user svcacct set" command.
 func mainAdminUserSvcAcctSet(ctx *cli.Context) error {
 	checkAdminUserSvcAcctSetSyntax(ctx)
 

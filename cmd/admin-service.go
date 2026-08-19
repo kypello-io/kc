@@ -36,7 +36,7 @@ var adminServiceCmd = cli.Command{
 	Subcommands:     adminServiceSubcommands,
 }
 
-// mainAdmin is the handle for "mc admin service" command.
+// mainAdmin is the handle for "kc admin service" command.
 func mainAdminService(ctx *cli.Context) error {
 	commandNotFound(ctx, adminServiceSubcommands)
 	return nil

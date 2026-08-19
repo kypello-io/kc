@@ -153,7 +153,7 @@ func (adm adminConfigComplete) Predict(a complete.Args) (prediction []string) {
 	return
 }
 
-// s3Complete knows how to complete an mc s3 path
+// s3Complete knows how to complete an kc s3 path
 type s3Complete struct {
 	deepLevel int
 }
@@ -226,7 +226,7 @@ var (
 	fsCompleter          = fsComplete{}
 )
 
-// The list of all commands supported by mc with their mapping
+// The list of all commands supported by kc with their mapping
 // with their bash completer function
 var completeCmds = map[string]complete.Predictor{
 	// S3 API level commands

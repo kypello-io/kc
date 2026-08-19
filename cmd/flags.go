@@ -30,7 +30,7 @@ import (
 
 const envPrefix = "MC_"
 
-// Collection of mc flags currently supported
+// Collection of kc flags currently supported
 var globalFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:   "config-dir, C",
@@ -45,7 +45,7 @@ var globalFlags = []cli.Flag{
 	},
 	cli.BoolFlag{
 		Name:   "disable-pager, dp",
-		Usage:  "disable mc internal pager and print to raw stdout",
+		Usage:  "disable kc internal pager and print to raw stdout",
 		EnvVar: envPrefix + globalDisablePagerEnv,
 		Hidden: false,
 	},

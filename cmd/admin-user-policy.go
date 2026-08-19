@@ -57,7 +57,7 @@ func checkAdminUserPolicySyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminUserPolicy is the handler for "mc admin user policy" command.
+// mainAdminUserPolicy is the handler for "kc admin user policy" command.
 func mainAdminUserPolicy(ctx *cli.Context) error {
 	checkAdminUserPolicySyntax(ctx)
 

@@ -44,7 +44,7 @@ FLAGS:
 `,
 }
 
-// mainAdminPrometheus is the handle for "mc admin prometheus" command.
+// mainAdminPrometheus is the handle for "kc admin prometheus" command.
 func mainAdminPrometheus(ctx *cli.Context) error {
 	commandNotFound(ctx, adminPrometheusSubcommands)
 	return nil

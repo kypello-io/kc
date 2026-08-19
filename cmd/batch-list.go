@@ -170,7 +170,7 @@ func checkBatchListSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainBatchList is the handle for "mc batch create" command.
+// mainBatchList is the handle for "kc batch create" command.
 func mainBatchList(ctx *cli.Context) error {
 	checkBatchListSyntax(ctx)
 

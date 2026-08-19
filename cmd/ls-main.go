@@ -193,7 +193,7 @@ func checkListSyntax(cliCtx *cli.Context) ([]string, doListOptions) {
 	return args, opts
 }
 
-// mainList - is a handler for mc ls command
+// mainList - is a handler for kc ls command
 func mainList(cliCtx *cli.Context) error {
 	ctx, cancelList := context.WithCancel(globalContext)
 	defer cancelList()

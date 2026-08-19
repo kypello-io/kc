@@ -4,8 +4,8 @@
 
 ## Steps to reproduce the behavior
 
-## mc --version
-- (paste output of `mc --version`)
+## kc --version
+- (paste output of `kc --version`)
 
 ## System information
 

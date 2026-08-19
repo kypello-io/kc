@@ -60,7 +60,7 @@ func checkAdminDecommissionCancelSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminDecommissionCancel is the handle for "mc admin decommission cancel" command.
+// mainAdminDecommissionCancel is the handle for "kc admin decommission cancel" command.
 func mainAdminDecommissionCancel(ctx *cli.Context) error {
 	checkAdminDecommissionCancelSyntax(ctx)
 

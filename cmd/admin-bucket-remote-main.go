@@ -35,7 +35,7 @@ var adminBucketRemoteCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainadminBucketRemote is the handle for "mc admin bucket remote" command.
+// mainadminBucketRemote is the handle for "kc admin bucket remote" command.
 func mainadminBucketRemote(ctx *cli.Context) error {
 	commandNotFound(ctx, adminBucketRemoteSubcommands)
 	return nil

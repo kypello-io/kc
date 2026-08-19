@@ -539,7 +539,7 @@ func writeJSONObjToZip(zipWriter *zip.Writer, obj any, filename string) error {
 // compress MinIO performance output
 func zipPerfResult(perfOutput PerfTestOutput, resultFilename string) (string, error) {
 	// Create perf results zip file
-	tmpArchive, e := os.CreateTemp("", "mc-perf-*.zip")
+	tmpArchive, e := os.CreateTemp("", "kc-perf-*.zip")
 
 	if e != nil {
 		return "", e

@@ -52,7 +52,7 @@ EXAMPLES:
 `,
 }
 
-// adminKMSKeyCmd is the handle for the "mc admin kms key" command.
+// adminKMSKeyCmd is the handle for the "kc admin kms key" command.
 func mainAdminKMSKeyList(ctx *cli.Context) error {
 	if len(ctx.Args()) == 0 || len(ctx.Args()) > 1 {
 		showCommandHelpAndExit(ctx, 1) // last argument is exit code

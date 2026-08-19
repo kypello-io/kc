@@ -63,7 +63,7 @@ func checkBatchGenerateSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainBatchGenerate is the handle for "mc batch generate" command.
+// mainBatchGenerate is the handle for "kc batch generate" command.
 func mainBatchGenerate(ctx *cli.Context) error {
 	checkBatchGenerateSyntax(ctx)
 

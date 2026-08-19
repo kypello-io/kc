@@ -35,7 +35,7 @@ var versionCmd = cli.Command{
 	Subcommands:     versionSubcommands,
 }
 
-// mainVersion is the handle for "mc version" command.
+// mainVersion is the handle for "kc version" command.
 func mainVersion(ctx *cli.Context) error {
 	commandNotFound(ctx, versionSubcommands)
 	return nil

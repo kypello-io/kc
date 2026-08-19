@@ -54,7 +54,7 @@ func getMcConfigDir() (string, *probe.Error) {
 	return configDir, nil
 }
 
-// Return default default mc config directory.
+// Return default default kc config directory.
 // Generally you want to use getMcConfigDir which returns custom overrides.
 func defaultMCConfigDir() string {
 	if runtime.GOOS == "windows" {
@@ -163,7 +163,7 @@ func isMcConfigExists() bool {
 }
 
 // cleanAlias removes any forbidden trailing slashes or backslashes
-// before any validation to avoid annoying mc complaints.
+// before any validation to avoid annoying kc complaints.
 func cleanAlias(s string) string {
 	s = strings.TrimSuffix(s, "/")
 	s = strings.TrimSuffix(s, "\\")

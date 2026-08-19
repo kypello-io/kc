@@ -61,7 +61,7 @@ func checkAdminDecommissionStatusSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminDecommissionStatus is the handle for "mc admin decomission status" command.
+// mainAdminDecommissionStatus is the handle for "kc admin decomission status" command.
 func mainAdminDecommissionStatus(ctx *cli.Context) error {
 	checkAdminDecommissionStatusSyntax(ctx)
 

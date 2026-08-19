@@ -36,9 +36,9 @@ var adminSubnetCmd = cli.Command{
 	Hidden:      true,
 }
 
-// mainAdminSubnet is the handle for "mc admin subnet" command.
+// mainAdminSubnet is the handle for "kc admin subnet" command.
 func mainAdminSubnet(_ *cli.Context) error {
-	deprecatedError("mc support")
+	deprecatedError("kc support")
 	return nil
 	// Sub-commands like "health", "register" have their own main.
 }

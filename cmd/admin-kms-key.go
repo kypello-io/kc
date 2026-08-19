@@ -35,7 +35,7 @@ var adminKMSKeyCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainAdminKMSKey is the handle for the "mc admin kms key" command.
+// mainAdminKMSKey is the handle for the "kc admin kms key" command.
 func mainAdminKMSKey(ctx *cli.Context) error {
 	commandNotFound(ctx, adminKMSKeySubcommands)
 	return nil

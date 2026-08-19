@@ -34,7 +34,7 @@ var adminClusterIAMCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainadminClusterIAM is the handle for "mc admin cluster bucket" command.
+// mainadminClusterIAM is the handle for "kc admin cluster bucket" command.
 func mainadminClusterIAM(ctx *cli.Context) error {
 	commandNotFound(ctx, adminClusterIAMSubcommands)
 	return nil

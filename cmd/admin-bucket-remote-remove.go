@@ -32,8 +32,8 @@ var adminBucketRemoteRmCmd = cli.Command{
 	HideHelp:     true,
 }
 
-// mainAdminBucketRemoteRemove is the handle for "mc admin bucket remote rm" command.
+// mainAdminBucketRemoteRemove is the handle for "kc admin bucket remote rm" command.
 func mainAdminBucketRemoteRemove(_ *cli.Context) error {
-	deprecatedError("mc replicate rm")
+	deprecatedError("kc replicate rm")
 	return nil
 }

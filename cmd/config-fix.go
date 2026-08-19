@@ -266,7 +266,7 @@ func fixConfigLocation() {
 		return
 	}
 	if !strings.HasSuffix(strings.ToLower(filepath.Base(os.Args[0])), ".exe") {
-		// Most likely scenario, command was called as 'mc'.
+		// Most likely scenario, command was called as 'kc'.
 		// If there is a config at legacyLoc+".exe", rename it.
 		legacyLoc := mcCustomConfigDir + ".exe"
 		unusedLoc := mcCustomConfigDir + ".unused"
@@ -278,7 +278,7 @@ func fixConfigLocation() {
 		return
 	}
 
-	// mc was called with '.exe';
+	// kc was called with '.exe';
 	// config can have changed location.
 	_, e := os.Stat(mcCustomConfigDir)
 	wantExists := !os.IsNotExist(e)
@@ -288,8 +288,8 @@ func fixConfigLocation() {
 	legExists := !os.IsNotExist(e) && stat.IsDir()
 	switch {
 	case legExists && wantExists:
-		// Both exist and mc was called with legacy path (.exe)
-		// Rename the 'mc' config and move the legacy location one to where we want it.
+		// Both exist and kc was called with legacy path (.exe)
+		// Rename the 'kc' config and move the legacy location one to where we want it.
 		backupdir := fmt.Sprintf("%s.unused\\", mcCustomConfigDir)
 		_ = os.RemoveAll(backupdir)
 		e := os.Rename(mcCustomConfigDir, backupdir)

@@ -264,7 +264,7 @@ func doTree(ctx context.Context, url string, timeRef time.Time, level int, branc
 	return nil
 }
 
-// mainTree - is a handler for mc tree command
+// mainTree - is a handler for kc tree command
 func mainTree(cliCtx *cli.Context) error {
 	ctx, cancelList := context.WithCancel(globalContext)
 	defer cancelList()

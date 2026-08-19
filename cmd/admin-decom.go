@@ -38,7 +38,7 @@ var adminDecommissionCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainAdminDecommission is the handle for "mc admin decommission" command.
+// mainAdminDecommission is the handle for "kc admin decommission" command.
 func mainAdminDecommission(ctx *cli.Context) error {
 	commandNotFound(ctx, adminDecommissionSubcommands)
 	return nil

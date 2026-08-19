@@ -46,7 +46,7 @@ import (
 	completeinstall "github.com/posener/complete/cmd/install"
 )
 
-// global flags for mc.
+// global flags for kc.
 var mcFlags = []cli.Flag{
 	cli.BoolFlag{
 		Name:  "autocompletion",
@@ -65,7 +65,7 @@ func copyrightRange(start string) string {
 	return start + "-" + CopyrightYear
 }
 
-// Help template for mc
+// Help template for kc
 var mcHelpTemplate = `NAME:
   {{.Name}} - {{.Usage}}
 
@@ -106,11 +106,11 @@ func init() {
 	}
 }
 
-// Main starts mc application
+// Main starts kc application
 func Main(args []string) error {
 	if len(args) > 1 {
 		switch args[1] {
-		case "mc", filepath.Base(args[0]):
+		case "kc", filepath.Base(args[0]):
 			mainComplete()
 			return nil
 		}
@@ -136,7 +136,7 @@ func Main(args []string) error {
 		globalTermWidth, globalTermHeight = w, h
 	}
 
-	// Set the mc app name.
+	// Set the kc app name.
 	appName := filepath.Base(args[0])
 	if runtime.GOOS == "windows" && strings.HasSuffix(strings.ToLower(appName), ".exe") {
 		// Trim ".exe" from Windows executable.
@@ -274,19 +274,19 @@ func migrate() {
 	migrateShare()
 }
 
-// initMC - initialize 'mc'.
+// initMC - initialize 'kc'.
 func initMC() {
-	// Check if mc config exists.
+	// Check if kc config exists.
 	if !isMcConfigExists() {
 		err := saveMcConfig(newMcConfig())
-		fatalIf(err.Trace(), "Unable to save new mc config.")
+		fatalIf(err.Trace(), "Unable to save new kc config.")
 
 		if !globalQuiet && !globalJSON {
 			console.Infoln("Configuration written to `" + mustGetMcConfigPath() + "`. Please update your access credentials.")
 		}
 	}
 
-	// Check if mc share directory exists.
+	// Check if kc share directory exists.
 	if !isShareDirExists() {
 		initShareConfig()
 	}
@@ -355,7 +355,7 @@ func installAutoCompletion() {
 		}
 	}
 	if printMsg != "" {
-		if completeinstall.IsInstalled(filepath.Base(os.Args[0])) || completeinstall.IsInstalled("mc") {
+		if completeinstall.IsInstalled(filepath.Base(os.Args[0])) || completeinstall.IsInstalled("kc") {
 			console.Infoln("autocompletion is enabled.", printMsg)
 		} else {
 			fatalIf(probe.NewError(e), "Unable to install auto-completion.")
@@ -493,9 +493,9 @@ func registerApp(name string) *cli.App {
 	app.HideHelpCommand = true
 	app.Usage = "Kypello Client for object storage and filesystems."
 	app.Commands = appCmds
-	// Kypello maintains kc; MinIO, Inc. wrote the mc it was forked from, and
+	// Kypello maintains kc; MinIO, Inc. wrote the kc it was forked from, and
 	// AGPLv3 section 4 requires that notice to be kept intact.
-	app.Author = "Kypello, and MinIO, Inc. for the mc code this is forked from"
+	app.Author = "Kypello, and MinIO, Inc. for the kc code this is forked from"
 	app.Version = ReleaseTag
 	app.Flags = append(mcFlags, globalFlags...)
 	app.CustomAppHelpTemplate = mcHelpTemplate

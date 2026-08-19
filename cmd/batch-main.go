@@ -39,7 +39,7 @@ var batchCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainBatch is the handle for "mc batch" command.
+// mainBatch is the handle for "kc batch" command.
 func mainBatch(ctx *cli.Context) error {
 	commandNotFound(ctx, batchSubcommands)
 	return nil

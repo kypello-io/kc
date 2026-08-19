@@ -52,7 +52,7 @@ EXAMPLES:
   1. Add a lifecycle rule with a transition and a noncurrent version transition action for objects with prefix doc/ whose size is greater than 1MiB in mybucket.
      Tiers must exist in MinIO. Use existing tiers or add new tiers.
 
-     {{.Prompt}} mc ilm tier add minio myminio MINIOTIER-1 --endpoint https://warm-minio-1.com \
+     {{.Prompt}} kc ilm tier add minio myminio MINIOTIER-1 --endpoint https://warm-minio-1.com \
          --access-key ACCESSKEY --secret-key SECRETKEY --bucket bucket1 --prefix prefix1
 
      {{.Prompt}} {{.HelpName}} --prefix "doc/" --size-gt 1MiB --transition-days "90" --transition-tier "MINIOTIER-1" \
@@ -119,7 +119,7 @@ var ilmAddFlags = []cli.Flag{
 	},
 	cli.StringFlag{
 		Name:   "storage-class",
-		Usage:  "storage class for current version to transition into. MinIO supports tiers configured via `mc-admin-tier-add`.",
+		Usage:  "storage class for current version to transition into. MinIO supports tiers configured via `kc-admin-tier-add`.",
 		Hidden: true,
 	},
 	cli.StringFlag{

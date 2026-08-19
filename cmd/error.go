@@ -86,7 +86,7 @@ func fatal(err *probe.Error, msg string, data ...any) {
 	if !globalDebug {
 		var e error
 		if errors.Is(globalContext.Err(), context.Canceled) {
-			// mc is getting killed
+			// kc is getting killed
 			e = errors.New("Canceling upon user request")
 		} else {
 			e = err.ToGoError()
@@ -162,7 +162,7 @@ func errorIf(err *probe.Error, msg string, data ...any) {
 	if !globalDebug {
 		var e error
 		if errors.Is(globalContext.Err(), context.Canceled) {
-			// mc is getting killed
+			// kc is getting killed
 			e = errors.New("Canceling upon user request")
 		} else {
 			e = err.ToGoError()
