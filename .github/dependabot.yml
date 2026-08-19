@@ -3,14 +3,22 @@
 # Please see the documentation for all configuration options:
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
+# A release that is hours old has had no time to be pulled for being malicious.
+# Holding every update for a week means a compromised version is very likely to
+# have been yanked before anything here proposes it. The weekly sweep in
+# .github/workflows/deps.yml runs on Mondays, so this costs no real latency.
 version: 2
 updates:
   - package-ecosystem: "gomod" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "github-actions" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    cooldown:
+      default-days: 7
 

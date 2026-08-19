@@ -7,6 +7,11 @@ on:
     types:
       - opened
 
+# The job authenticates with BOT_PAT, not GITHUB_TOKEN, so the automatic token
+# needs no scopes at all. An explicit empty block is what closes both the zizmor
+# excessive-permissions finding and CodeQL's actions/missing-workflow-permissions.
+permissions: {}
+
 jobs:
   add-to-project:
     name: Add issue to project
