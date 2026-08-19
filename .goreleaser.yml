@@ -128,7 +128,9 @@ kos:
       - linux/arm/v7
       - linux/ppc64le
       - linux/s390x
-    sbom: none
+    # Archives get an SBOM via the `sboms` block below; without this the
+    # published image was the only artifact shipping without one.
+    sbom: spdx
 
 sboms:
   - artifacts: archive
