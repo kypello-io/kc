@@ -4,20 +4,25 @@ on:
   push:
     branches: [master]
 
-permissions:
-  contents: write
-  id-token: write
-  packages: write
+# Every scope here is needed by exactly one job, so grant them per job: a
+# workflow-level block hands `packages: write` and `id-token: write` to the
+# semver job, which only creates a tag and a release.
+permissions: {}
 
 jobs:
   semver:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # go-semantic-release creates the tag and the release
     outputs:
       version: ${{ steps.semver.outputs.version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          # go-semantic-release talks to the API with the token below; the
+          # checkout is only read locally, for the commit history.
+          persist-credentials: false
 
       - uses: go-semantic-release/action@2e9dc4247a6004f8377781bef4cb9dad273a741f # v1.24.1
         id: semver
@@ -28,11 +33,19 @@ jobs:
     runs-on: ubuntu-latest
     needs: semver
     if: needs.semver.outputs.version != ''
+    permissions:
+      contents: write # upload the release assets
+      packages: write # ko pushes the image to ghcr.io
+      id-token: write # cosign keyless signing
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           ref: v${{ needs.semver.outputs.version }}
+          # Nothing on this path pushes with git: assets go through GITHUB_TOKEN,
+          # the image through docker/login-action, signatures through OIDC, and
+          # .goreleaser.yml declares no cross-repository publisher.
+          persist-credentials: false
 
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
