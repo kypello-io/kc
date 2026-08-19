@@ -40,11 +40,14 @@ func getConfiguredMaxPipeSize() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	maxSize, err := strconv.ParseInt(strings.TrimSpace(string(b)), 10, 64)
+	// Atoi, not ParseInt into an int64 that is then narrowed: the value is only
+	// ever used as an int, and this way one too large for the platform's int
+	// errors out instead of wrapping to a small or negative pipe size.
+	maxSize, err := strconv.Atoi(strings.TrimSpace(string(b)))
 	if err != nil {
 		return 0, fmt.Errorf("error parsing %s content: %v", pipeMaxSizeProcFile, err)
 	}
-	return int(maxSize), nil
+	return maxSize, nil
 }
 
 // increasePipeBufferSize attempts to increase the pipe size to the the input value
