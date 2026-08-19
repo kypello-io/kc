@@ -184,26 +184,31 @@ function bump_uses() {
     done 3<"$file"
 }
 
-## The golangci-lint binary is pinned through an action input, not an action ref.
-function bump_golangci_lint() {
-    local file="$1" current latest
-    grep -q 'golangci/golangci-lint-action' "$file" || return 0
+## Some tools are pinned by an action input rather than by the action's own ref:
+## the golangci-lint binary, and the cosign release. Left alone they never move,
+## and an unpinned cosign is what silently changed the image signature format in
+## v1.0.5 - so they are pinned, and bumped here.
+##
+##   <file> <action that must be present> <input name> <repo that publishes it>
+function bump_tool_input() {
+    local file="$1" action="$2" input="$3" repo="$4" current latest
+    grep -q "$action" "$file" || return 0
 
-    current="$(sed -n 's/^[[:space:]]*version:[[:space:]]*\(v[0-9][^[:space:]]*\)[[:space:]]*$/\1/p' "$file" | head -1)"
+    current="$(sed -n "s/^[[:space:]]*${input}:[[:space:]]*\(v[0-9][^[:space:]]*\)[[:space:]]*$/\1/p" "$file" | head -1)"
     if [ -z "$current" ]; then
         return 0
     fi
 
-    if ! latest="$(latest_tag golangci/golangci-lint)"; then
-        echo "error: could not resolve the latest golangci-lint release" >&2
+    if ! latest="$(latest_tag "$repo")"; then
+        echo "error: could not resolve the latest ${repo} release" >&2
         return 1
     fi
     if [ "$latest" = "$current" ]; then
         return 0
     fi
 
-    sed -i "s|^\([[:space:]]*version:[[:space:]]*\)$(regex_escape "$current")[[:space:]]*$|\1${latest}|" "$file"
-    echo "  -> golangci-lint: ${current} -> ${latest}"
+    sed -i "s|^\([[:space:]]*${input}:[[:space:]]*\)$(regex_escape "$current")[[:space:]]*$|\1${latest}|" "$file"
+    echo "  -> ${input}: ${current} -> ${latest}"
 }
 
 function main() {
@@ -214,7 +219,8 @@ function main() {
         [ -e "$file" ] || continue
         echo "$(basename "$file"):"
         bump_uses "$file"
-        bump_golangci_lint "$file"
+        bump_tool_input "$file" golangci/golangci-lint-action version golangci/golangci-lint
+        bump_tool_input "$file" sigstore/cosign-installer cosign-release sigstore/cosign
     done
 }
 
