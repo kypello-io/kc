@@ -41,7 +41,13 @@ jobs:
           # land in released artifacts.
           cache: false
 
+      # Pinned deliberately. Leaving this to the installer's default is how
+      # v1.0.5 silently moved from simple-signing to Sigstore bundles and broke
+      # `cosign verify` for anyone on cosign 2.x. buildscripts/bump-actions.sh
+      # keeps the pin current, so the change arrives in a reviewable sweep.
       - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with:
+          cosign-release: v3.1.3
 
       - uses: ko-build/setup-ko@61b4d1d396f5b2e7d6bb6fefdce3dc38d1a13445 # v0.10
 
