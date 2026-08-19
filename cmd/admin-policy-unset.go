@@ -30,10 +30,10 @@ var adminPolicyUnsetCmd = cli.Command{
 	Flags:              globalFlags,
 	HideHelpCommand:    true,
 	Hidden:             true,
-	CustomHelpTemplate: `Please use 'mc admin policy detach'`,
+	CustomHelpTemplate: `Please use 'kc admin policy detach'`,
 }
 
 func mainAdminPolicyUnsetErr(_ *cli.Context) error {
-	deprecatedError("mc admin policy detach")
+	deprecatedError("kc admin policy detach")
 	return nil
 }

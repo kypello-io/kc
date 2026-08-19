@@ -277,7 +277,7 @@ func (config *Config) getCredsChain() ([]credentials.Provider, *probe.Error) {
 			if val := env.Get("MC_ROLE_ARN_"+config.Alias, ""); val != "" {
 				os.Setenv("AWS_ROLE_ARN", val)
 			}
-			if val := env.Get("MC_ROLE_SESSION_NAME_"+config.Alias, randString(32, rand.NewSource(time.Now().UnixNano()), "mc-session-name-")); val != "" {
+			if val := env.Get("MC_ROLE_SESSION_NAME_"+config.Alias, randString(32, rand.NewSource(time.Now().UnixNano()), "kc-session-name-")); val != "" {
 				os.Setenv("AWS_ROLE_SESSION_NAME", val)
 			}
 		}

@@ -156,7 +156,7 @@ func parseAndCheckStatSyntax(ctx context.Context, cliCtx *cli.Context) ([]string
 	return targetUrls, recursive, versionID, rewind, withVersions
 }
 
-// mainStat - is a handler for mc stat command
+// mainStat - is a handler for kc stat command
 func mainStat(cliCtx *cli.Context) error {
 	ctx, cancelStat := context.WithCancel(globalContext)
 	defer cancelStat()

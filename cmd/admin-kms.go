@@ -33,7 +33,7 @@ var adminKMSCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainAdminKMS is the handle for the "mc admin kms" command.
+// mainAdminKMS is the handle for the "kc admin kms" command.
 func mainAdminKMS(ctx *cli.Context) error {
 	commandNotFound(ctx, adminKMSSubcommands)
 	return nil

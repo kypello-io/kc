@@ -67,7 +67,7 @@ EXAMPLES:
 `,
 }
 
-// mainAdminPolicyAttach is the handler for "mc admin policy attach" command.
+// mainAdminPolicyAttach is the handler for "kc admin policy attach" command.
 func mainAdminPolicyAttach(ctx *cli.Context) error {
 	return userAttachOrDetachPolicy(ctx, true)
 }

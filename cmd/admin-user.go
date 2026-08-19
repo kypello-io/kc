@@ -41,7 +41,7 @@ var adminUserCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainAdminUser is the handle for "mc admin config" command.
+// mainAdminUser is the handle for "kc admin config" command.
 func mainAdminUser(ctx *cli.Context) error {
 	commandNotFound(ctx, adminUserSubcommands)
 	return nil

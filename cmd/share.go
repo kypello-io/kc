@@ -114,7 +114,7 @@ func getShareDir() (string, *probe.Error) {
 	return sharedURLsDataDir, nil
 }
 
-// Get share dir name or die. (NOTE: This `Die` approach is only OK for mc like tools.).
+// Get share dir name or die. (NOTE: This `Die` approach is only OK for kc like tools.).
 func mustGetShareDir() string {
 	shareDir, err := getShareDir()
 	fatalIf(err.Trace(), "Unable to determine share folder.")

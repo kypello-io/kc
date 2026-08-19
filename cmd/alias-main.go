@@ -55,7 +55,7 @@ var aliasCmd = cli.Command{
 	Subcommands:     aliasSubcommands,
 }
 
-// mainAlias is the handle for "mc alias" command. provides sub-commands which write configuration data in json format to config file.
+// mainAlias is the handle for "kc alias" command. provides sub-commands which write configuration data in json format to config file.
 func mainAlias(ctx *cli.Context) error {
 	commandNotFound(ctx, aliasSubcommands)
 	return nil

@@ -34,7 +34,7 @@ var adminClusterCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainAdminCluster is the handle for "mc admin cluster" command.
+// mainAdminCluster is the handle for "kc admin cluster" command.
 func mainAdminCluster(ctx *cli.Context) error {
 	commandNotFound(ctx, adminClusterSubcommands)
 	return nil

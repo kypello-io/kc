@@ -32,7 +32,7 @@ const (
 var (
 	// set once during first load.
 	cacheCfgV10 *configV10
-	// All access to mc config file should be synchronized.
+	// All access to kc config file should be synchronized.
 	cfgMutex = &sync.RWMutex{}
 )
 

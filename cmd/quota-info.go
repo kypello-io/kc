@@ -53,7 +53,7 @@ func checkQuotaInfoSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainQuotaInfo is the handler for "mc quota info" command.
+// mainQuotaInfo is the handler for "kc quota info" command.
 func mainQuotaInfo(ctx *cli.Context) error {
 	checkQuotaInfoSyntax(ctx)
 

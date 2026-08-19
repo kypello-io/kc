@@ -39,7 +39,7 @@ var adminUserSvcAcctCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainAdminUserSvcAcct is the handle for "mc admin user svcacct" command.
+// mainAdminUserSvcAcct is the handle for "kc admin user svcacct" command.
 func mainAdminUserSvcAcct(ctx *cli.Context) error {
 	commandNotFound(ctx, adminUserSvcAcctSubcommands)
 	return nil

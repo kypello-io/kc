@@ -33,8 +33,8 @@ var adminBucketInfoCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainAdminBucketInfo is the handler for "mc admin bucket info" command.
+// mainAdminBucketInfo is the handler for "kc admin bucket info" command.
 func mainAdminBucketInfo(_ *cli.Context) error {
-	deprecatedError("mc stat")
+	deprecatedError("kc stat")
 	return nil
 }

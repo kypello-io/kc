@@ -107,7 +107,7 @@ func checkQuotaSetSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainQuotaSet is the handler for "mc quota set" command.
+// mainQuotaSet is the handler for "kc quota set" command.
 func mainQuotaSet(ctx *cli.Context) error {
 	checkQuotaSetSyntax(ctx)
 

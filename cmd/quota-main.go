@@ -35,7 +35,7 @@ var quotaCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainQuota is the handle for "mc quota" command.
+// mainQuota is the handle for "kc quota" command.
 func mainQuota(ctx *cli.Context) error {
 	commandNotFound(ctx, quotaSubcommands)
 	return nil

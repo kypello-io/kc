@@ -61,7 +61,7 @@ EXAMPLES:
 `,
 }
 
-// mainAdmihPolicyDetach is the handler for "mc admin policy detach" command.
+// mainAdmihPolicyDetach is the handler for "kc admin policy detach" command.
 func mainAdminPolicyDetach(ctx *cli.Context) error {
 	return userAttachOrDetachPolicy(ctx, false)
 }

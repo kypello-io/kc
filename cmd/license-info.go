@@ -98,9 +98,17 @@ func (li licInfoMessage) JSON() string {
 	return string(jsonBytes)
 }
 
+// The upstream message closed by offering MinIO AIStor Subscriptions. A MinIO
+// subscription grants no rights over kc, so pointing users there told them
+// their AGPL obligations could be bought off by a third party. kc is offered
+// under the AGPL alone; anything else is a conversation, not a signup link.
 func getAGPLMessage() string {
 	return `License: GNU AGPL v3 <https://www.gnu.org/licenses/agpl-3.0.txt>
-If you are distributing or hosting Kypello along with your proprietary application as combined works, you may require to switch to a commercial license included in the MinIO AIStor Subscriptions. (https://min.io/signup?ref=mc)`
+kc is maintained by Kypello and is a fork of MinIO Client (mc), which is
+copyright MinIO, Inc. and also licensed under the GNU AGPL v3.
+If you are distributing or hosting kc along with your proprietary application
+as combined works, the AGPL applies to the combination. Seek your own legal
+advice before doing so.`
 }
 
 func mainLicenseInfo(_ *cli.Context) error {

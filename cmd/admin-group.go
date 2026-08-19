@@ -38,7 +38,7 @@ var adminGroupCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainAdminGroup is the handle for "mc admin config" command.
+// mainAdminGroup is the handle for "kc admin config" command.
 func mainAdminGroup(ctx *cli.Context) error {
 	commandNotFound(ctx, adminGroupSubcommands)
 	return nil

@@ -258,7 +258,7 @@ var (
 	)
 )
 
-const uaMirrorAppName = "mc-mirror"
+const uaMirrorAppName = "kc-mirror"
 
 type mirrorJob struct {
 	stopCh chan struct{}
@@ -723,7 +723,7 @@ func (mj *mirrorJob) watchMirrorEvents(ctx context.Context, events []EventInfo) 
 				(getSourceModTimeKey(mirrorURL.SourceContent.Metadata) != "" ||
 					getSourceModTimeKey(mirrorURL.SourceContent.UserMetadata) != "") {
 				// If source has active-active attributes, it means that the
-				// object was uploaded by "mc mirror", hence ignore the event
+				// object was uploaded by "kc mirror", hence ignore the event
 				// to avoid copying it.
 				continue
 			}

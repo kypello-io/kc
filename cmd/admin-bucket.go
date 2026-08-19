@@ -36,7 +36,7 @@ var adminBucketCmd = cli.Command{
 	Hidden:          true,
 }
 
-// mainAdminBucket is the handle for "mc admin bucket" command.
+// mainAdminBucket is the handle for "kc admin bucket" command.
 func mainAdminBucket(ctx *cli.Context) error {
 	commandNotFound(ctx, adminBucketSubcommands)
 	return nil

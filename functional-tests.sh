@@ -20,16 +20,16 @@
 
 ################################################################################
 #
-# This script is usable by mc functional tests, mint tests and MinIO verification
+# This script is usable by kc functional tests, mint tests and MinIO verification
 # tests.
 #
-# * As mc functional tests, just run this script.  It uses mc executable binary
+# * As kc functional tests, just run this script.  It uses kc executable binary
 #   in current working directory or in the path.  The tests uses play.min.io
 #   as MinIO server.
 #
 # * For other, call this script with environment variables MINT_MODE,
 #   MINT_DATA_DIR, SERVER_ENDPOINT, ACCESS_KEY, SECRET_KEY and ENABLE_HTTPS. It
-#   uses mc executable binary in current working directory and uses given MinIO
+#   uses kc executable binary in current working directory and uses given MinIO
 #   server to run tests. MINT_MODE is set by mint to specify what category of
 #   tests to run.
 #
@@ -93,11 +93,11 @@ fi
 SERVER_ALIAS="myminio"
 SERVER_ALIAS_TLS="myminio-ssl"
 
-BUCKET_NAME="mc-test-bucket-$RANDOM"
+BUCKET_NAME="kc-test-bucket-$RANDOM"
 WATCH_OUT_FILE="$WORK_DIR/watch.out-$RANDOM"
 
-MC_CONFIG_DIR="/tmp/.mc-$RANDOM"
-MC="$PWD/mc"
+MC_CONFIG_DIR="/tmp/.kc-$RANDOM"
+MC="$PWD/kc"
 declare -a MC_CMD
 
 function get_md5sum() {
@@ -124,7 +124,7 @@ function get_duration() {
 
 function log_success() {
 	if [ -n "$MINT_MODE" ]; then
-		printf '{"name": "mc", "duration": "%d", "function": "%s", "status": "PASS"}\n' "$(get_duration "$1")" "$2"
+		printf '{"name": "kc", "duration": "%d", "function": "%s", "status": "PASS"}\n' "$(get_duration "$1")" "$2"
 	fi
 }
 
@@ -171,9 +171,9 @@ function assert() {
 		if [ -n "$MINT_MODE" ]; then
 			err=$(printf "$err" | python -c 'import sys,json; print(json.dumps(sys.stdin.read()))')
 			## err is already JSON string, no need to double quote
-			printf '{"name": "mc", "duration": "%d", "function": "%s", "status": "FAIL", "error": %s}\n' "$(get_duration "$start_time")" "$func_name" "$err"
+			printf '{"name": "kc", "duration": "%d", "function": "%s", "status": "FAIL", "error": %s}\n' "$(get_duration "$start_time")" "$func_name" "$err"
 		else
-			echo "mc: $func_name: $err"
+			echo "kc: $func_name: $err"
 		fi
 
 		if [ "$rv" -eq 0 ]; then
@@ -234,7 +234,7 @@ function test_make_bucket() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	bucket_name="mc-test-bucket-$RANDOM"
+	bucket_name="kc-test-bucket-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mb "${SERVER_ALIAS}/${bucket_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rb "${SERVER_ALIAS}/${bucket_name}"
 
@@ -255,9 +255,9 @@ function test_rb() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	bucket1="mc-test-bucket-$RANDOM-1"
-	bucket2="mc-test-bucket-$RANDOM-2"
-	object_name="mc-test-object-$RANDOM"
+	bucket1="kc-test-bucket-$RANDOM-1"
+	bucket2="kc-test-bucket-$RANDOM-2"
+	object_name="kc-test-object-$RANDOM"
 
 	# Tets rb when the bucket is empty
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mb "${SERVER_ALIAS}/${bucket1}"
@@ -292,7 +292,7 @@ function teardown() {
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rb --force "${SERVER_ALIAS}/${BUCKET_NAME}"
 }
 
-# Test mc ls on a S3 prefix where a lower similar prefix exists as well e.g. dir-foo/ and dir/
+# Test kc ls on a S3 prefix where a lower similar prefix exists as well e.g. dir-foo/ and dir/
 function test_list_dir() {
 	show "${FUNCNAME[0]}"
 
@@ -313,7 +313,7 @@ function test_od_object() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd od if="${FILE_1_MB}" of="${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd od of="${FILE_1_MB}" if="${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 
@@ -324,7 +324,7 @@ function test_put_object() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 
@@ -335,7 +335,7 @@ function test_put_object_error() {
 	show "${FUNCNAME[0]}"
 	start_time=$(get_time)
 
-	object_long_name=$(printf "mc-test-object-%01100d" 1)
+	object_long_name=$(printf "kc-test-object-%01100d" 1)
 	assert_failure "$start_time" "${FUNCNAME[0]}" mc_cmd cp "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_long_name}"
 
 	log_success "$start_time" "${FUNCNAME[0]}"
@@ -345,7 +345,7 @@ function test_put_object_multipart() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp "${FILE_65_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 
@@ -356,7 +356,7 @@ function test_put_object_0byte() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp "${FILE_0_B}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}" "${object_name}.downloaded"
 	assert_success "$start_time" "${FUNCNAME[0]}" check_md5sum "$FILE_0_B_MD5SUM" "${object_name}.downloaded"
@@ -365,35 +365,35 @@ function test_put_object_0byte() {
 	log_success "$start_time" "${FUNCNAME[0]}"
 }
 
-## Test mc cp command with storage-class flag set
+## Test kc cp command with storage-class flag set
 function test_put_object_with_storage_class() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp --storage-class REDUCED_REDUNDANCY "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 
 	log_success "$start_time" "${FUNCNAME[0]}"
 }
 
-## Test mc cp command with storage-class flag set to incorrect value
+## Test kc cp command with storage-class flag set to incorrect value
 function test_put_object_with_storage_class_error() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_failure "$start_time" "${FUNCNAME[0]}" mc_cmd cp --storage-class REDUCED "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 
 	log_success "$start_time" "${FUNCNAME[0]}"
 }
 
-## Test mc cp command with valid metadata string
+## Test kc cp command with valid metadata string
 function test_put_object_with_metadata() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp --attr key1=val1\;key2=val2 "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 	diff -bB <(echo "val1") <("${MC_CMD[@]}" --json stat "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}" | jq -r '.metadata."X-Amz-Meta-Key1"') >/dev/null 2>&1
 	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to put object with metadata"
@@ -406,7 +406,7 @@ function test_get_object() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}" "${object_name}.downloaded"
 	assert_success "$start_time" "${FUNCNAME[0]}" check_md5sum "$FILE_1_MB_MD5SUM" "${object_name}.downloaded"
@@ -419,7 +419,7 @@ function test_get_object_multipart() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp "${FILE_65_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}" "${object_name}.downloaded"
 	assert_success "$start_time" "${FUNCNAME[0]}" check_md5sum "$FILE_65_MB_MD5SUM" "${object_name}.downloaded"
@@ -432,7 +432,7 @@ function test_presigned_post_policy_error() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 
 	out=$("${MC_CMD[@]}" --json share upload "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}")
 	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to get presigned post policy and put object url"
@@ -472,7 +472,7 @@ function test_presigned_put_object() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 
 	out=$("${MC_CMD[@]}" --json share upload "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}")
 	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to get presigned put object url"
@@ -491,7 +491,7 @@ function test_presigned_get_object() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 
 	out=$("${MC_CMD[@]}" --json share download "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}")
@@ -510,10 +510,10 @@ function test_cat_object() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 	"${MC_CMD[@]}" cat "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}" >"${object_name}.downloaded"
-	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to download object using 'mc cat'"
+	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to download object using 'kc cat'"
 	assert_success "$start_time" "${FUNCNAME[0]}" check_md5sum "$FILE_1_MB_MD5SUM" "${object_name}.downloaded"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${object_name}.downloaded" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 
@@ -524,12 +524,12 @@ function test_cat_stdin() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
-	bucket_name="mc-test-bucket-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
+	bucket_name="kc-test-bucket-$RANDOM"
 	mc_cmd mb "${SERVER_ALIAS}/${bucket_name}"
 	echo "testcontent" | mc_cmd pipe "${SERVER_ALIAS}/${bucket_name}/${object_name}"
 	"${MC_CMD[@]}" cat "${SERVER_ALIAS}/${bucket_name}/${object_name}" >stdout.output
-	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to redirect stdin to stdout using 'mc cat'"
+	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to redirect stdin to stdout using 'kc cat'"
 	assert_success "$start_time" "${FUNCNAME[0]}" check_md5sum "42ed9fb3563d8e9c7bb522be443033f4" stdout.output
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm stdout.output
 
@@ -540,8 +540,8 @@ function test_mirror_list_objects() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	bucket_name="mc-test-bucket-$RANDOM"
-	object_name="mc-test-object-$RANDOM"
+	bucket_name="kc-test-bucket-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mb "${SERVER_ALIAS}/${bucket_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mirror "$DATA_DIR" "${SERVER_ALIAS}/${bucket_name}"
 
@@ -553,13 +553,13 @@ function test_mirror_list_objects() {
 	log_success "$start_time" "${FUNCNAME[0]}"
 }
 
-## Tests mc mirror command with --storage-class flag set
+## Tests kc mirror command with --storage-class flag set
 function test_mirror_list_objects_storage_class() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	bucket_name="mc-test-bucket-$RANDOM"
-	object_name="mc-test-object-$RANDOM"
+	bucket_name="kc-test-bucket-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mb "${SERVER_ALIAS}/${bucket_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mirror --storage-class REDUCED_REDUNDANCY "$DATA_DIR" "${SERVER_ALIAS}/${bucket_name}"
 
@@ -576,7 +576,7 @@ function test_find_empty() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	bucket_name="mc-test-bucket-$RANDOM"
+	bucket_name="kc-test-bucket-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mb "${SERVER_ALIAS}/${bucket_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mirror "$DATA_DIR" "${SERVER_ALIAS}/${bucket_name}"
 
@@ -594,7 +594,7 @@ function test_find() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	bucket_name="mc-test-bucket-$RANDOM"
+	bucket_name="kc-test-bucket-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mb "${SERVER_ALIAS}/${bucket_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mirror "$DATA_DIR" "${SERVER_ALIAS}/${bucket_name}"
 
@@ -610,8 +610,8 @@ function test_watch_object() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	bucket_name="mc-test-bucket-$RANDOM"
-	object_name="mc-test-object-$RANDOM"
+	bucket_name="kc-test-bucket-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mb "${SERVER_ALIAS}/${bucket_name}"
 
 	# start a process to watch on bucket
@@ -679,7 +679,7 @@ function test_config_host_add_error() {
 function test_put_object_with_sse() {
 	show "${FUNCNAME[0]}"
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	cli_flag="${SERVER_ALIAS}/${BUCKET_NAME}=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
 	# put encrypted object; then delete with correct secret key
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp --enc-c "${cli_flag}" "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
@@ -690,7 +690,7 @@ function test_put_object_with_sse() {
 function test_put_object_with_sse_error() {
 	show "${FUNCNAME[0]}"
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	cli_flag="${SERVER_ALIAS}/${BUCKET_NAME}=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MD"
 	# put object with invalid encryption key; should fail
 	assert_failure "$start_time" "${FUNCNAME[0]}" mc_cmd cp --enc-c "${cli_flag}" "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
@@ -700,7 +700,7 @@ function test_put_object_with_sse_error() {
 function test_cat_object_with_sse() {
 	show "${FUNCNAME[0]}"
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	cli_flag="${SERVER_ALIAS}/${BUCKET_NAME}=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
 	# put encrypted object; then cat object correct secret key
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp --enc-c "${cli_flag}" "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
@@ -712,7 +712,7 @@ function test_cat_object_with_sse() {
 function test_cat_object_with_sse_error() {
 	show "${FUNCNAME[0]}"
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	cli_flag="${SERVER_ALIAS}/${BUCKET_NAME}=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
 	# put encrypted object; then cat object with no secret key
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp --enc-c "${cli_flag}" "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
@@ -720,7 +720,7 @@ function test_cat_object_with_sse_error() {
 	log_success "$start_time" "${FUNCNAME[0]}"
 }
 
-# Test "mc cp -r" command of a directory with and without a leading slash
+# Test "kc cp -r" command of a directory with and without a leading slash
 function test_copy_directory() {
 	show "${FUNCNAME[0]}"
 
@@ -748,7 +748,7 @@ function test_copy_directory() {
 	log_success "$start_time" "${FUNCNAME[0]}"
 }
 
-# Test "mc cp -a" command to see if it preserves file system attributes
+# Test "kc cp -a" command to see if it preserves file system attributes
 function test_copy_object_preserve_filesystem_attr() {
 	show "${FUNCNAME[0]}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp -a "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
@@ -758,7 +758,7 @@ function test_copy_object_preserve_filesystem_attr() {
 	log_success "$start_time" "${FUNCNAME[0]}"
 }
 
-# Test "mc mv" command
+# Test "kc mv" command
 function test_mv_object() {
 	show "${FUNCNAME[0]}"
 
@@ -798,7 +798,7 @@ function test_copy_object_with_sse_rewrite() {
 	show "${FUNCNAME[0]}"
 	start_time=$(get_time)
 	prefix="prefix"
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 
 	cli_flag="${SERVER_ALIAS}/${BUCKET_NAME}/${prefix}=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
 	# create encrypted object on server
@@ -807,10 +807,10 @@ function test_copy_object_with_sse_rewrite() {
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp --enc-c "${cli_flag}" "${SERVER_ALIAS}/${BUCKET_NAME}/${prefix}/${object_name}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 	# cat the unencrypted destination object. should return data without any error
 	"${MC_CMD[@]}" cat "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}" >"${object_name}.downloaded"
-	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to download object using 'mc cat'"
+	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to download object using 'kc cat'"
 	assert_success "$start_time" "${FUNCNAME[0]}" check_md5sum "$FILE_1_MB_MD5SUM" "${object_name}.downloaded"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${object_name}.downloaded"
-	# mc rm on with multi-object delete, deletes encrypted object without encryption key.
+	# kc rm on with multi-object delete, deletes encrypted object without encryption key.
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${SERVER_ALIAS}/${BUCKET_NAME}/${prefix}/${object_name}"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 
@@ -822,7 +822,7 @@ function test_copy_object_with_sse_dest() {
 	show "${FUNCNAME[0]}"
 	start_time=$(get_time)
 	prefix="prefix"
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 
 	cli_flag1="${SERVER_ALIAS}/${BUCKET_NAME}/${prefix}=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
 	cli_flag2="${SERVER_ALIAS}/${BUCKET_NAME}=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
@@ -834,12 +834,12 @@ function test_copy_object_with_sse_dest() {
 		"${SERVER_ALIAS}/${BUCKET_NAME}/${prefix}/${object_name}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 	# cat the destination object with the new key. should return data without any error
 	"${MC_CMD[@]}" cat --enc-c "${cli_flag2}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}" >"${object_name}.downloaded"
-	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to download object using 'mc cat'"
+	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to download object using 'kc cat'"
 	assert_success "$start_time" "${FUNCNAME[0]}" check_md5sum "$FILE_1_MB_MD5SUM" "${object_name}.downloaded"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${object_name}.downloaded"
-	# mc rm on src object with first encryption key should pass
+	# kc rm on src object with first encryption key should pass
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${SERVER_ALIAS}/${BUCKET_NAME}/${prefix}/${object_name}"
-	# mc rm on encrypted destination object with second encryption key should pass
+	# kc rm on encrypted destination object with second encryption key should pass
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 
 	log_success "$start_time" "${FUNCNAME[0]}"
@@ -850,7 +850,7 @@ function test_sse_key_rotation() {
 	show "${FUNCNAME[0]}"
 	start_time=$(get_time)
 	prefix="prefix"
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	old_key="MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
 	new_key="MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
 	cli_flag1="${SERVER_ALIAS}/${BUCKET_NAME}/${prefix}=${old_key}"
@@ -863,10 +863,10 @@ function test_sse_key_rotation() {
 		"${SERVER_ALIAS_TLS}/${BUCKET_NAME}/${prefix}/${object_name}" "${SERVER_ALIAS_TLS}/${BUCKET_NAME}/${object_name}"
 	# cat the object with the new key. should return data without any error
 	"${MC_CMD[@]}" cat --enc-c "${cli_flag2}" "${SERVER_ALIAS_TLS}/${BUCKET_NAME}/${object_name}" >"${object_name}.downloaded"
-	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to download object using 'mc cat'"
+	assert_success "$start_time" "${FUNCNAME[0]}" show_on_failure $? "unable to download object using 'kc cat'"
 	assert_success "$start_time" "${FUNCNAME[0]}" check_md5sum "$FILE_1_MB_MD5SUM" "${object_name}.downloaded"
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${object_name}.downloaded"
-	# mc rm on encrypted object with succeed anyways, without encrypted keys.
+	# kc rm on encrypted object with succeed anyways, without encrypted keys.
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${SERVER_ALIAS_TLS}/${BUCKET_NAME}/${object_name}"
 
 	log_success "$start_time" "${FUNCNAME[0]}"
@@ -877,7 +877,7 @@ function test_mirror_with_sse() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	bucket_name="mc-test-bucket-$RANDOM"
+	bucket_name="kc-test-bucket-$RANDOM"
 	cli_flag="${SERVER_ALIAS}/${bucket_name}=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
 
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd mb "${SERVER_ALIAS}/${bucket_name}"
@@ -895,11 +895,11 @@ function test_rm_object_with_sse() {
 
 	# test whether remove fails for encrypted object if secret key not provided.
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	cli_flag="${SERVER_ALIAS}/${BUCKET_NAME}=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
 
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp --enc-c "${cli_flag}" "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
-	# rm will not fail even if the encryption keys are not provided, since mc rm uses multi-object delete.
+	# rm will not fail even if the encryption keys are not provided, since kc rm uses multi-object delete.
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd rm "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
 
 	log_success "$start_time" "${FUNCNAME[0]}"
@@ -909,7 +909,7 @@ function test_get_object_with_sse() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	cli_flag="${SERVER_ALIAS}/${BUCKET_NAME}=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
 
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp --enc-c "${cli_flag}" "${FILE_1_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
@@ -924,7 +924,7 @@ function test_put_object_multipart_sse() {
 	show "${FUNCNAME[0]}"
 
 	start_time=$(get_time)
-	object_name="mc-test-object-$RANDOM"
+	object_name="kc-test-object-$RANDOM"
 	cli_flag="${SERVER_ALIAS}/${BUCKET_NAME}=MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDA"
 
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd cp --enc-c "${cli_flag}" "${FILE_65_MB}" "${SERVER_ALIAS}/${BUCKET_NAME}/${object_name}"
@@ -953,8 +953,8 @@ function test_admin_users() {
 	if [ "$ENABLE_HTTPS" != "1" ]; then
 		scheme="http"
 	fi
-	object1_name="mc-test-object-$RANDOM"
-	object2_name="mc-test-object-$RANDOM"
+	object1_name="kc-test-object-$RANDOM"
+	object2_name="kc-test-object-$RANDOM"
 
 	# Adding an alias for the $test_alias
 	assert_success "$start_time" "${FUNCNAME[0]}" mc_cmd alias set $test_alias "${scheme}://${SERVER_ENDPOINT}" ${username} ${password}
@@ -1077,10 +1077,10 @@ function __init__() {
 		mkdir -p "$WORK_DIR"
 		mkdir -p "$DATA_DIR"
 
-		# If mc executable binary is not available in current directory, use it in the path.
+		# If kc executable binary is not available in current directory, use it in the path.
 		if [ ! -x "$MC" ]; then
-			if ! MC=$(which mc 2>/dev/null); then
-				echo "'mc' executable binary not found in current directory and in path"
+			if ! MC=$(which kc 2>/dev/null); then
+				echo "'kc' executable binary not found in current directory and in path"
 				exit 1
 			fi
 		fi

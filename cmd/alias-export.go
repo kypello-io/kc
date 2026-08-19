@@ -40,7 +40,7 @@ EXAMPLES:
      {{ .Prompt }} {{ .HelpName }} myminio/ > credentials.json
 
   2. Export the credentials to standard output and pipe it to import command
-     {{ .Prompt }} {{ .HelpName }} alias1/  | mc alias import alias2/
+     {{ .Prompt }} {{ .HelpName }} alias1/  | kc alias import alias2/
 `,
 }
 

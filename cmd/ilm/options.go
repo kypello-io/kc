@@ -318,7 +318,7 @@ func GetLifecycleOptions(ctx *cli.Context) (LifecycleOptions, *probe.Error) {
 		return LifecycleOptions{}, probe.NewError(errors.New("noncurrentversion-transition-days must be set"))
 	}
 	// for MinIO transition storage-class is same as label defined on
-	// `mc admin bucket remote add --service ilm --label` command
+	// `kc admin bucket remote add --service ilm --label` command
 	if ctx.IsSet("tags") {
 		tags = strPtr(ctx.String("tags"))
 	}

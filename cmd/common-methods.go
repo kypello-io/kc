@@ -517,7 +517,7 @@ func uploadSourceToTargetURL(ctx context.Context, uploadOpts uploadSourceToTarge
 }
 
 // newClientFromAlias gives a new client interface for matching
-// alias entry in the mc config file. If no matching host config entry
+// alias entry in the kc config file. If no matching host config entry
 // is found, fs client is returned.
 func newClientFromAlias(alias, urlStr string) (Client, *probe.Error) {
 	alias, _, hostCfg, err := expandAlias(alias)

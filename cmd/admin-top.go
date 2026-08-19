@@ -34,7 +34,7 @@ var adminTopCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainAdminTop is the handle for "mc admin top" command.
+// mainAdminTop is the handle for "kc admin top" command.
 func mainAdminTop(ctx *cli.Context) error {
 	commandNotFound(ctx, adminTopSubcommands)
 	return nil

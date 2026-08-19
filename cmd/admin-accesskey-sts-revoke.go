@@ -118,7 +118,7 @@ func checkSTSRevokeSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminAccesskeySTSRevoke is the handle for "mc admin accesskey sts-revoke" command.
+// mainAdminAccesskeySTSRevoke is the handle for "kc admin accesskey sts-revoke" command.
 func mainAdminAccesskeySTSRevoke(ctx *cli.Context) error {
 	checkSTSRevokeSyntax(ctx)
 

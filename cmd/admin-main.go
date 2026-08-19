@@ -71,7 +71,7 @@ var adminCmd = cli.Command{
 
 const dateTimeFormatFilename = "2006-01-02T15-04-05.999999-07-00"
 
-// mainAdmin is the handle for "mc admin" command.
+// mainAdmin is the handle for "kc admin" command.
 func mainAdmin(ctx *cli.Context) error {
 	commandNotFound(ctx, adminCmdSubcommands)
 	return nil

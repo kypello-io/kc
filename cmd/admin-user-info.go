@@ -57,7 +57,7 @@ func checkAdminUserInfoSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminUserInfo is the handler for "mc admin user info" command.
+// mainAdminUserInfo is the handler for "kc admin user info" command.
 func mainAdminUserInfo(ctx *cli.Context) error {
 	checkAdminUserInfoSyntax(ctx)
 

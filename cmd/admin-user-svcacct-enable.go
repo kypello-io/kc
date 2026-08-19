@@ -54,7 +54,7 @@ func checkAdminUserSvcAcctEnableSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminUserSvcAcctEnable is the handle for "mc admin user svcacct enable" command.
+// mainAdminUserSvcAcctEnable is the handle for "kc admin user svcacct enable" command.
 func mainAdminUserSvcAcctEnable(ctx *cli.Context) error {
 	checkAdminUserSvcAcctEnableSyntax(ctx)
 

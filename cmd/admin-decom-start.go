@@ -75,7 +75,7 @@ func (s startDecomMessage) JSON() string {
 	return string(startDecomBytes)
 }
 
-// mainAdminDecommissionStart is the handle for "mc admin decommission start" command.
+// mainAdminDecommissionStart is the handle for "kc admin decommission start" command.
 func mainAdminDecommissionStart(ctx *cli.Context) error {
 	checkAdminDecommissionStartSyntax(ctx)
 

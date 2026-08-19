@@ -102,7 +102,7 @@ func (r readyMessage) JSON() string {
 	return string(jsonMessageBytes)
 }
 
-// mainReady - main handler for mc ready command.
+// mainReady - main handler for kc ready command.
 func mainReady(cliCtx *cli.Context) error {
 	if !cliCtx.Args().Present() {
 		exitCode := 1

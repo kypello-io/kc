@@ -54,7 +54,7 @@ func checkAdminUserRemoveSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminUserRemove is the handle for "mc admin user remove" command.
+// mainAdminUserRemove is the handle for "kc admin user remove" command.
 func mainAdminUserRemove(ctx *cli.Context) error {
 	checkAdminUserRemoveSyntax(ctx)
 

@@ -96,7 +96,7 @@ func checkCorsSetSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainCorsSet is the handle for "mc cors set" command.
+// mainCorsSet is the handle for "kc cors set" command.
 func mainCorsSet(ctx *cli.Context) error {
 	checkCorsSetSyntax(ctx)
 

@@ -35,7 +35,7 @@ var encryptCmd = cli.Command{
 	Subcommands:     encryptSubcommands,
 }
 
-// mainEncrypt is the handle for "mc encrypt" command.
+// mainEncrypt is the handle for "kc encrypt" command.
 func mainEncrypt(ctx *cli.Context) error {
 	commandNotFound(ctx, encryptSubcommands)
 	return nil

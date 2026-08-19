@@ -52,7 +52,7 @@ func checkCorsRemoveSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainCorsRemove is the handle for "mc cors remove" command.
+// mainCorsRemove is the handle for "kc cors remove" command.
 func mainCorsRemove(ctx *cli.Context) error {
 	checkCorsRemoveSyntax(ctx)
 

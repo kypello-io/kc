@@ -35,7 +35,7 @@ var licenseCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainlicense is the handle for "mc license" command.
+// mainlicense is the handle for "kc license" command.
 func mainlicense(ctx *cli.Context) error {
 	commandNotFound(ctx, licenseSubcommands)
 	return nil

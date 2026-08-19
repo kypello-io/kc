@@ -111,7 +111,7 @@ func commonAccesskeyCreate(ctx *cli.Context, ldap bool) error {
 	targetUser := args.Get(1)
 
 	if ctx.Bool("login") {
-		deprecatedError("mc idp ldap accesskey create-with-login")
+		deprecatedError("kc idp ldap accesskey create-with-login")
 	}
 
 	opts := accessKeyCreateOpts(ctx, targetUser)

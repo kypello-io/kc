@@ -257,7 +257,7 @@ func generatePrometheusConfig(ctx *cli.Context) error {
 	return nil
 }
 
-// mainAdminPrometheus is the handle for "mc admin prometheus generate" sub-command.
+// mainAdminPrometheus is the handle for "kc admin prometheus generate" sub-command.
 func mainAdminPrometheusGenerate(ctx *cli.Context) error {
 	console.SetColor("yaml", color.New(color.FgGreen))
 

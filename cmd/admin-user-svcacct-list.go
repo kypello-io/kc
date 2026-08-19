@@ -57,7 +57,7 @@ func checkAdminUserSvcAcctListSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminUserSvcAcctList is the handle for "mc admin user svcacct ls" command.
+// mainAdminUserSvcAcctList is the handle for "kc admin user svcacct ls" command.
 func mainAdminUserSvcAcctList(ctx *cli.Context) error {
 	checkAdminUserSvcAcctListSyntax(ctx)
 

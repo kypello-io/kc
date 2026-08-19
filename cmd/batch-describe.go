@@ -54,7 +54,7 @@ func checkBatchDescribeSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainBatchDescribe is the handle for "mc batch create" command.
+// mainBatchDescribe is the handle for "kc batch create" command.
 func mainBatchDescribe(ctx *cli.Context) error {
 	checkBatchDescribeSyntax(ctx)
 

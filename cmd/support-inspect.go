@@ -155,7 +155,7 @@ func mainSupportInspect(ctx *cli.Context) error {
 	fatalIf(probe.NewError(e).Trace(aliasedURL), "Unable to inspect file.")
 
 	// Download the inspect data in a temporary file first
-	tmpFile, e := os.CreateTemp("", "mc-inspect-")
+	tmpFile, e := os.CreateTemp("", "kc-inspect-")
 	fatalIf(probe.NewError(e), "Unable to download file data.")
 	copied := false
 

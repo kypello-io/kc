@@ -52,7 +52,7 @@ func checkCorsGetSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainCorsGet is the handle for "mc cors get" command.
+// mainCorsGet is the handle for "kc cors get" command.
 func mainCorsGet(ctx *cli.Context) error {
 	checkCorsGetSyntax(ctx)
 

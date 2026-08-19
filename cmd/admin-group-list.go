@@ -54,7 +54,7 @@ func checkAdminGroupListSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminGroupList is the handle for "mc admin group list" command.
+// mainAdminGroupList is the handle for "kc admin group list" command.
 func mainAdminGroupList(ctx *cli.Context) error {
 	checkAdminGroupListSyntax(ctx)
 

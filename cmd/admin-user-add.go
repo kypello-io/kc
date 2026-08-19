@@ -71,7 +71,7 @@ EXAMPLES:
 
   4. Add a new user 'foobar' to MinIO server, then attach IAM policy "writeonly".
      {{.Prompt}} {{.HelpName}} myminio foobar foo12345 
-     {{.Prompt}} mc admin policy attach myminio writeonly --user foobar
+     {{.Prompt}} kc admin policy attach myminio writeonly --user foobar
 `,
 }
 
@@ -186,7 +186,7 @@ func fetchUserKeys(args cli.Args) (string, string) {
 	return accessKey, secretKey
 }
 
-// mainAdminUserAdd is the handle for "mc admin user add" command.
+// mainAdminUserAdd is the handle for "kc admin user add" command.
 func mainAdminUserAdd(ctx *cli.Context) error {
 	checkAdminUserAddSyntax(ctx)
 

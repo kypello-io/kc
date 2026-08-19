@@ -33,7 +33,7 @@ var (
 		Name:         "add",
 		Usage:        "add a lifecycle configuration rule for a bucket",
 		Action:       mainILMAdd,
-		Hidden:       true, // to avoid being listed in `mc ilm`
+		Hidden:       true, // to avoid being listed in `kc ilm`
 		OnUsageError: onUsageError,
 		Before:       setGlobalsFromContext,
 		Flags:        append(ilmAddFlags, globalFlags...),
@@ -55,10 +55,10 @@ EXAMPLES:
 
   2. Add a lifecycle rule with a transition and a noncurrent version transition action for objects with prefix doc/ in mybucket.
      Tiers must exist in MinIO. Use existing tiers or add new tiers.
-     {{.Prompt}} mc tier add minio myminio MINIOTIER-1 --endpoint https://warm-minio-1.com \
+     {{.Prompt}} kc tier add minio myminio MINIOTIER-1 --endpoint https://warm-minio-1.com \
          --access-key ACCESSKEY --secret-key SECRETKEY --bucket bucket1 --prefix prefix1
 
-     {{.Prompt}} mc tier add minio myminio MINIOTIER-2 --endpoint https://warm-minio-2.com \
+     {{.Prompt}} kc tier add minio myminio MINIOTIER-2 --endpoint https://warm-minio-2.com \
          --access-key ACCESSKEY --secret-key SECRETKEY --bucket bucket2 --prefix prefix2
 
      {{.Prompt}} {{.HelpName}} --prefix "doc/" --transition-days "90" --transition-tier "MINIOTIER-1" \
@@ -74,7 +74,7 @@ EXAMPLES:
 		Name:         "rm",
 		Usage:        "remove (if any) existing lifecycle configuration rule",
 		Action:       mainILMRemove,
-		Hidden:       true, // to avoid being listed in `mc ilm`
+		Hidden:       true, // to avoid being listed in `kc ilm`
 		OnUsageError: onUsageError,
 		Before:       setGlobalsFromContext,
 		Flags:        append(ilmRemoveFlags, globalFlags...),
@@ -105,7 +105,7 @@ EXAMPLES:
 		Name:         "edit",
 		Usage:        "modify a lifecycle configuration rule with given id",
 		Action:       mainILMEdit,
-		Hidden:       true, // to avoid being listed in `mc ilm`
+		Hidden:       true, // to avoid being listed in `kc ilm`
 		OnUsageError: onUsageError,
 		Before:       setGlobalsFromContext,
 		Flags:        append(ilmEditFlags, globalFlags...),
@@ -139,7 +139,7 @@ EXAMPLES:
 		Name:         "ls",
 		Usage:        "lists lifecycle configuration rules set on a bucket",
 		Action:       mainILMList,
-		Hidden:       true, // to avoid being listed in `mc ilm`
+		Hidden:       true, // to avoid being listed in `kc ilm`
 		OnUsageError: onUsageError,
 		Before:       setGlobalsFromContext,
 		Flags:        append(ilmListFlags, globalFlags...),
@@ -174,7 +174,7 @@ EXAMPLES:
 		Name:         "export",
 		Usage:        "export lifecycle configuration in JSON format",
 		Action:       mainILMExport,
-		Hidden:       true, // to avoid being listed in `mc ilm`
+		Hidden:       true, // to avoid being listed in `kc ilm`
 		OnUsageError: onUsageError,
 		Before:       setGlobalsFromContext,
 		Flags:        globalFlags,
@@ -200,7 +200,7 @@ EXAMPLES:
 		Name:         "import",
 		Usage:        "import lifecycle configuration in JSON format",
 		Action:       mainILMImport,
-		Hidden:       true, // to avoid being listed in `mc ilm`
+		Hidden:       true, // to avoid being listed in `kc ilm`
 		OnUsageError: onUsageError,
 		Before:       setGlobalsFromContext,
 		Flags:        globalFlags,

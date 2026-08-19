@@ -54,7 +54,7 @@ func checkAdminUserSvcAcctRemoveSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminUserSvcAcctRemove is the handle for "mc admin user svcacct rm" command.
+// mainAdminUserSvcAcctRemove is the handle for "kc admin user svcacct rm" command.
 func mainAdminUserSvcAcctRemove(ctx *cli.Context) error {
 	console.SetColor("AccMessage", color.New(color.FgGreen))
 

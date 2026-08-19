@@ -36,7 +36,7 @@ var replicateResyncCmd = cli.Command{
 	HiddenAliases:   true,
 }
 
-// mainReplicateResync is the handle for "mc replicate resync" command.
+// mainReplicateResync is the handle for "kc replicate resync" command.
 func mainReplicateResync(ctx *cli.Context) error {
 	commandNotFound(ctx, replicateResyncSubcommands)
 	return nil

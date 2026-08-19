@@ -170,7 +170,7 @@ func moveFile(sourcePath, destPath string) error {
 
 func saveProfileFile(data io.ReadCloser) {
 	// Create profile zip file
-	tmpFile, e := os.CreateTemp("", "mc-profile-")
+	tmpFile, e := os.CreateTemp("", "kc-profile-")
 	fatalIf(probe.NewError(e), "Unable to download profile data.")
 
 	// Copy zip content to target download file
@@ -195,7 +195,7 @@ func saveProfileFile(data io.ReadCloser) {
 	fatalIf(probe.NewError(moveFile(tmpFile.Name(), profileFile)), "Unable to save profile data")
 }
 
-// mainSupportProfile is the handle for "mc support profile" command.
+// mainSupportProfile is the handle for "kc support profile" command.
 func mainSupportProfile(ctx *cli.Context) error {
 	// Check for command syntax
 	checkAdminProfileSyntax(ctx)

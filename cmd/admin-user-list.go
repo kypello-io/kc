@@ -56,7 +56,7 @@ func checkAdminUserListSyntax(ctx *cli.Context) {
 	}
 }
 
-// mainAdminUserList is the handle for "mc admin user list" command.
+// mainAdminUserList is the handle for "kc admin user list" command.
 func mainAdminUserList(ctx *cli.Context) error {
 	checkAdminUserListSyntax(ctx)
 

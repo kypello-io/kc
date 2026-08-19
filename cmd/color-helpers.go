@@ -1,6 +1,7 @@
 // Copyright (c) 2015-2022 MinIO, Inc.
+// Copyright (c) 2026 Kypello
 //
-// This file is part of MinIO Object Storage stack
+// This file is part of the Kypello Client (kc), a fork of MinIO Client (mc).
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -15,9 +16,27 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-//go:build fips
-
 package cmd
 
-// Newer official download info URLs appear earlier below.
-var mcReleaseInfoURL = mcReleaseURL + "mc.fips.sha256sum"
+import (
+	"fmt"
+	"os"
+
+	"github.com/fatih/color"
+	"github.com/mattn/go-isatty"
+)
+
+var (
+	// Check if we stderr, stdout are dumb terminals, we do not apply
+	// ansi coloring on dumb terminals.
+	isTerminal = func() bool {
+		return isatty.IsTerminal(os.Stdout.Fd()) && isatty.IsTerminal(os.Stderr.Fd())
+	}
+
+	colorCyanBold = func() func(a ...any) string {
+		if isTerminal() {
+			color.New(color.FgCyan, color.Bold).SprintFunc()
+		}
+		return fmt.Sprint
+	}()
+)

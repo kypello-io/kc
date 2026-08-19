@@ -34,7 +34,7 @@ var adminScannerCmd = cli.Command{
 	HideHelpCommand: true,
 }
 
-// mainAdminScanner is the handle for "mc admin scanner" command.
+// mainAdminScanner is the handle for "kc admin scanner" command.
 func mainAdminScanner(ctx *cli.Context) error {
 	commandNotFound(ctx, adminScannerSubcommands)
 	return nil

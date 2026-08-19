@@ -69,7 +69,7 @@ EXAMPLES:
 `,
 }
 
-// mainAdminPolicyEntities is the handler for "mc admin policy entities" command.
+// mainAdminPolicyEntities is the handler for "kc admin policy entities" command.
 func mainAdminPolicyEntities(ctx *cli.Context) error {
 	if len(ctx.Args()) != 1 {
 		showCommandHelpAndExit(ctx, 1)

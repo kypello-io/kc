@@ -59,7 +59,7 @@ EXAMPLES:
 `,
 }
 
-// mainIdpLdapAccesskeySTSRevoke is the handle for "mc idp ldap accesskey sts-revoke" command.
+// mainIdpLdapAccesskeySTSRevoke is the handle for "kc idp ldap accesskey sts-revoke" command.
 func mainIdpLdapAccesskeySTSRevoke(ctx *cli.Context) error {
 	checkSTSRevokeSyntax(ctx)
 
