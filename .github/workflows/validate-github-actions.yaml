@@ -5,12 +5,18 @@ on:
     paths:
       - '.github/workflows/**'
       - '.github/actions/**'
+      # The config only started taking effect with the `config:` fix below, so
+      # a change to it now has to be exercised like any workflow change: zizmor
+      # exits 1 on a structurally invalid config, and a suppression added here
+      # weakens every audit silently.
+      - '.github/zizmor.yml'
   push:
     branches:
       - main
     paths:
       - '.github/workflows/**'
       - '.github/actions/**'
+      - '.github/zizmor.yml'
 
 permissions:
   contents: read
