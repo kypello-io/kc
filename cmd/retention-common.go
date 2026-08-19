@@ -114,8 +114,10 @@ func getRetainUntilDate(validity uint64, unit minio.ValidityUnit) (string, *prob
 	if validity == 0 {
 		return "", probe.NewError(fmt.Errorf("invalid validity '%v'", validity))
 	}
-	// Ensure validity fits into an int before converting, to avoid overflow on 32-bit platforms.
-	if validity > uint64(math.MaxInt) {
+	// AddDate takes an int, which is 32-bit on 32-bit platforms. math.MaxInt is
+	// the bound for the platform doing the compiling, so it lets through values
+	// that overflow there; MaxInt32 is the bound that holds everywhere.
+	if validity > math.MaxInt32 {
 		return "", probe.NewError(fmt.Errorf("validity '%v' exceeds maximum supported value", validity))
 	}
 	t := UTCNow()
