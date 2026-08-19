@@ -18,7 +18,6 @@
 package cmd
 
 import (
-	"io"
 	"runtime"
 	"strings"
 	"time"
@@ -59,16 +58,6 @@ func newPB(total int64) *pb.ProgressBar {
 
 	// Start the progress bar.
 	return bar.Start()
-}
-
-func newProgressReader(r io.Reader, caption string, total int64) *pb.Reader {
-	bar := newPB(total)
-
-	if caption != "" {
-		bar.Set("prefix", caption)
-	}
-
-	return bar.NewProxyReader(r)
 }
 
 // newProgressBar - instantiate a progress bar.

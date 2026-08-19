@@ -97,7 +97,7 @@ BUCKET_NAME="mc-test-bucket-$RANDOM"
 WATCH_OUT_FILE="$WORK_DIR/watch.out-$RANDOM"
 
 MC_CONFIG_DIR="/tmp/.mc-$RANDOM"
-MC="$PWD/mc"
+MC="$PWD/kc"
 declare -a MC_CMD
 
 function get_md5sum() {
@@ -1077,10 +1077,10 @@ function __init__() {
 		mkdir -p "$WORK_DIR"
 		mkdir -p "$DATA_DIR"
 
-		# If mc executable binary is not available in current directory, use it in the path.
+		# If kc executable binary is not available in current directory, use it in the path.
 		if [ ! -x "$MC" ]; then
-			if ! MC=$(which mc 2>/dev/null); then
-				echo "'mc' executable binary not found in current directory and in path"
+			if ! MC=$(which kc 2>/dev/null); then
+				echo "'kc' executable binary not found in current directory and in path"
 				exit 1
 			fi
 		fi

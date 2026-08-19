@@ -19,3 +19,9 @@ kc.RELEASE*
 .vscode/
 .bin/
 kc
+# Release artifacts, if a build or download leaves them in the tree.
+*.rpm
+*.deb
+*.apk
+*.tar.gz
+*.zip

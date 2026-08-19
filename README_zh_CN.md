@@ -2,7 +2,8 @@
 
 [![license](https://img.shields.io/badge/license-AGPL%20V3-blue)](https://github.com/kypello-io/kc/blob/master/LICENSE)
 
-kc是[MinIO mc](https://github.com/minio/mc)的分支。
+kc是[MinIO mc](https://github.com/minio/mc)的分支，由Kypello维护。
+本项目与MinIO, Inc.无任何隶属关系，也未获得其认可或支持。详见[署名与许可证](#署名与许可证)。
 
 Kypello Client (kc)为ls，cat，cp，mirror，diff，find等UNIX命令提供了一种替代方案。它支持文件系统和兼容Amazon S3的云存储服务（AWS Signature v2和v4）。
 
@@ -40,62 +41,56 @@ docker run -it --entrypoint=/bin/sh ghcr.io/kypello-io/kc:latest
 
 然后使用[`kc alias`命令](#添加一个云存储服务)。
 
-## GNU/Linux
+## GNU/Linux、macOS和FreeBSD
+
 ### 下载二进制文件
 
-从[GitHub Releases](https://github.com/kypello-io/kc/releases/latest)下载最新版本。
-
-| 平台 | CPU架构 | 归档文件 |
-| ---------- | -------- |------|
-| GNU/Linux | 64-bit Intel | `kc_*_linux_amd64.tar.gz` |
-| GNU/Linux | 64-bit ARM | `kc_*_linux_arm64.tar.gz` |
+发布文件名中包含版本号，因此下面的命令会先解析出最新的版本。
 
 ```sh
-curl -LO https://github.com/kypello-io/kc/releases/latest/download/kc_*_linux_amd64.tar.gz
-tar xzf kc_*_linux_amd64.tar.gz
+VERSION=$(curl -fsSL https://api.github.com/repos/kypello-io/kc/releases/latest \
+  | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
+PLATFORM=linux_amd64   # 参见下表
+
+curl -fsSLO "https://github.com/kypello-io/kc/releases/download/v${VERSION}/kc_${VERSION}_${PLATFORM}.tar.gz"
+tar xzf "kc_${VERSION}_${PLATFORM}.tar.gz"
 ./kc --help
 ```
+
+| 平台 | CPU架构 | `PLATFORM` |
+| ---------- | -------- | ------ |
+| GNU/Linux | 64-bit Intel | `linux_amd64` |
+| GNU/Linux | 64-bit ARM | `linux_arm64` |
+| GNU/Linux | 32-bit ARMv7 | `linux_armv7` |
+| GNU/Linux | ppc64le | `linux_ppc64le` |
+| GNU/Linux | s390x | `linux_s390x` |
+| macOS | Intel | `darwin_amd64` |
+| macOS | Apple Silicon | `darwin_arm64` |
+| FreeBSD | 64-bit Intel | `freebsd_amd64` |
 
 ### Linux软件包
 
-deb、rpm和apk软件包可从[GitHub Releases](https://github.com/kypello-io/kc/releases/latest)获取。
+deb、rpm和apk软件包提供`amd64`、`arm64`、`armv7`、`ppc64le`和`s390x`架构。
 
 ```sh
+VERSION=$(curl -fsSL https://api.github.com/repos/kypello-io/kc/releases/latest \
+  | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
+BASE="https://github.com/kypello-io/kc/releases/download/v${VERSION}"
+
 # Debian/Ubuntu
-dpkg -i kc_*_linux_amd64.deb
+curl -fsSLO "${BASE}/kc_${VERSION}_linux_amd64.deb" && sudo dpkg -i "kc_${VERSION}_linux_amd64.deb"
 
 # RHEL/Fedora
-rpm -i kc_*_linux_amd64.rpm
+curl -fsSLO "${BASE}/kc_${VERSION}_linux_amd64.rpm" && sudo rpm -i "kc_${VERSION}_linux_amd64.rpm"
 
 # Alpine
-apk add --allow-untrusted kc_*_linux_amd64.apk
-```
-
-## macOS
-
-### 下载二进制文件
-
-从[GitHub Releases](https://github.com/kypello-io/kc/releases/latest)下载最新版本。
-
-| 平台 | CPU架构 | 归档文件 |
-| ---------- | -------- |------|
-| macOS | Intel | `kc_*_darwin_amd64.tar.gz` |
-| macOS | Apple Silicon | `kc_*_darwin_arm64.tar.gz` |
-
-```sh
-curl -LO https://github.com/kypello-io/kc/releases/latest/download/kc_*_darwin_arm64.tar.gz
-tar xzf kc_*_darwin_arm64.tar.gz
-./kc --help
+curl -fsSLO "${BASE}/kc_${VERSION}_linux_amd64.apk" && sudo apk add --allow-untrusted "kc_${VERSION}_linux_amd64.apk"
 ```
 
 ## Microsoft Windows
 ### 下载二进制文件
 
-从[GitHub Releases](https://github.com/kypello-io/kc/releases/latest)下载最新版本。
-
-| 平台 | CPU架构 | 归档文件 |
-| ---------- | -------- |------|
-| Windows | 64-bit Intel | `kc_*_windows_amd64.zip` |
+从[GitHub Releases](https://github.com/kypello-io/kc/releases/latest)下载`kc_<版本号>_windows_amd64.zip`（或`windows_arm64`），解压后运行：
 
 ```
 kc.exe --help
@@ -104,16 +99,20 @@ kc.exe --help
 ## 通过源码安装
 通过源码安装仅适用于开发人员和高级用户。
 
-如果您没有Golang环境，请参照[如何安装Golang](https://golang.org/doc/install)。
+如果您没有Golang环境，请参照[如何安装Golang](https://golang.org/doc/install)。所需的最低版本见[go.mod](https://github.com/kypello-io/kc/blob/master/go.mod)，当前为go1.26。
 
 ```sh
 go install github.com/kypello-io/kc@latest
 ```
 
+## 关于更新
+
+`kc`不会替换自身的二进制文件。请通过安装时使用的软件包管理器或容器镜像仓库进行更新，或按上文重新下载归档文件。`kc update`只会显示当前版本以及获取新版本的地址。
+
 ## 添加一个云存储服务
 如果你打算仅在POSIX兼容文件系统中使用`kc`,那你可以直接略过本节，跳到[日常使用](#everyday-use)。
 
-添加一个或多个S3兼容的服务，请参考下面说明。`kc`将所有的配置信息都存储在``~/.mc/config.json``文件中。
+添加一个或多个S3兼容的服务，请参考下面说明。`kc`将所有的配置信息都存储在``~/.kc/config.json``文件中。
 
 ```
 kc alias set <ALIAS> <YOUR-S3-ENDPOINT> <YOUR-ACCESS-KEY> <YOUR-SECRET-KEY> [--api API-SIGNATURE]
@@ -186,5 +185,10 @@ cat      cp       events   mb       pipe     rm       share
 ## 贡献
 请遵守[贡献者指南](https://github.com/kypello-io/kc/blob/master/CONTRIBUTING.md)。
 
-## 许可证
-`kc`的使用受GNU AGPLv3许可证约束，详见[LICENSE](https://github.com/kypello-io/kc/blob/master/LICENSE)文件。
+## 署名与许可证
+
+kc是[MinIO Client (mc)](https://github.com/minio/mc)的分支，mc的版权归MinIO, Inc.所有，并以GNU AGPLv3许可证发布。本分支由Kypello维护。MinIO, Inc.不维护、不认可、也不支持kc，购买MinIO商业订阅不会获得对kc的任何权利。
+
+`kc`的使用受GNU AGPLv3许可证约束，详见[LICENSE](https://github.com/kypello-io/kc/blob/master/LICENSE)文件。按照该许可证第4条的要求，上游的版权声明保留在[NOTICE](https://github.com/kypello-io/kc/blob/master/NOTICE)文件以及各源码文件中。
+
+`kc admin`、`kc support`和`kc idp`等命令用于管理MinIO服务器，其帮助信息中出现的MinIO指的是被管理的服务器，而非kc的作者。

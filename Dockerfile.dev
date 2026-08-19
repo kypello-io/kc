@@ -1,14 +1,15 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 
-LABEL maintainer="MinIO Inc <dev@min.io>"
+LABEL maintainer="Kypello <dev@kypello.io>"
 
-COPY mc /usr/bin/
+COPY kc /usr/bin/
 COPY CREDITS /licenses/CREDITS
 COPY LICENSE /licenses/LICENSE
+COPY NOTICE  /licenses/NOTICE
 
 RUN  \
      microdnf update --nodocs --assumeyes && \
      microdnf install ca-certificates --nodocs --assumeyes && \
      microdnf clean all
 
-ENTRYPOINT ["mc"]
+ENTRYPOINT ["kc"]

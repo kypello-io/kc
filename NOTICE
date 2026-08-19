@@ -1,3 +1,15 @@
+Kypello Client (kc)
+Copyright (c) 2026 Kypello
+
+kc is a fork of MinIO Client (mc) <https://github.com/minio/mc>. It is
+maintained by Kypello and is not affiliated with, endorsed by, or supported
+by MinIO, Inc.
+
+The notice below is retained from the upstream project, as required by
+section 4 of the GNU Affero General Public License version 3.
+
+----------------------------------------------------------------
+
 MinIO Client (C) 2014-2020 MinIO, Inc.
 
 This product includes software developed at MinIO, Inc.

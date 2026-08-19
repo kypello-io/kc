@@ -196,7 +196,7 @@ var (
 	jsonOutput               = true
 	printRawOut              = false
 	skipBuild                = false
-	mcCmd                    = ".././mc"
+	mcCmd                    = ".././kc"
 	preCmdParameters         = make([]string, 0)
 	buildPath                = "../."
 	metaPrefix               = "X-Amz-Meta-"

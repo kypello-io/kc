@@ -40,7 +40,6 @@ import (
 	"github.com/kypello-io/pkg/v3/trie"
 	"github.com/kypello-io/pkg/v3/words"
 	"github.com/minio/cli"
-	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7/pkg/set"
 	"golang.org/x/term"
 
@@ -53,6 +52,17 @@ var mcFlags = []cli.Flag{
 		Name:  "autocompletion",
 		Usage: "install auto-completion for your shell",
 	},
+}
+
+// copyrightRange renders a copyright span that starts at `start` and ends at
+// the build year. It collapses to a single year when the two coincide, and
+// when CopyrightYear is unset, which is the case for source builds -- those
+// used to print "2015-0000".
+func copyrightRange(start string) string {
+	if CopyrightYear == start || CopyrightYear == "0000" {
+		return start
+	}
+	return start + "-" + CopyrightYear
 }
 
 // Help template for mc
@@ -72,10 +82,12 @@ TIP:
   Use '{{.Name}} --autocompletion' to enable shell autocompletion
 
 COPYRIGHT:
-  Copyright (c) 2015-` + CopyrightYear + ` MinIO, Inc.
+  Copyright (c) ` + copyrightRange("2015") + ` MinIO, Inc.
+  Copyright (c) ` + copyrightRange("2026") + ` Kypello
 
 LICENSE:
   GNU AGPLv3 <https://www.gnu.org/licenses/agpl-3.0.html>
+  kc is maintained by Kypello and is a fork of MinIO Client (mc).
 `
 
 func init() {
@@ -396,25 +408,6 @@ func findClosestCommands(commandsTree *trie.Trie, command string) []string {
 	return closestCommands
 }
 
-// Check for updates and print a notification message
-func checkUpdate(ctx *cli.Context) {
-	// Do not print update messages, if quiet flag is set.
-	if !ctx.Bool("quiet") && !ctx.GlobalBool("quiet") {
-		// Its OK to ignore any errors during doUpdate() here.
-		if updateMsg, _, currentReleaseTime, latestReleaseTime, _, err := getUpdateInfo("", 2*time.Second); err == nil {
-			printMsg(updateMessage{
-				Status:  "success",
-				Message: updateMsg,
-			})
-		} else {
-			printMsg(updateMessage{
-				Status:  "success",
-				Message: prepareUpdateMessage("Run `mc update`", latestReleaseTime.Sub(currentReleaseTime)),
-			})
-		}
-	}
-}
-
 var appCmds = []cli.Command{
 	aliasCmd,
 	adminCmd,
@@ -464,8 +457,10 @@ var appCmds = []cli.Command{
 func printMCVersion(c *cli.Context) {
 	fmt.Fprintf(c.App.Writer, "%s version %s (commit-id=%s)\n", c.App.Name, c.App.Version, CommitID)
 	fmt.Fprintf(c.App.Writer, "Runtime: %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
-	fmt.Fprintf(c.App.Writer, "Copyright (c) 2015-%s MinIO, Inc.\n", CopyrightYear)
+	fmt.Fprintf(c.App.Writer, "Copyright (c) %s MinIO, Inc.\n", copyrightRange("2015"))
+	fmt.Fprintf(c.App.Writer, "Copyright (c) %s Kypello\n", copyrightRange("2026"))
 	fmt.Fprintf(c.App.Writer, "License GNU AGPLv3 <https://www.gnu.org/licenses/agpl-3.0.html>\n")
+	fmt.Fprintf(c.App.Writer, "kc is maintained by Kypello and is a fork of MinIO Client (mc).\n")
 }
 
 func registerApp(name string) *cli.App {
@@ -480,14 +475,6 @@ func registerApp(name string) *cli.App {
 	app := cli.NewApp()
 	app.Name = name
 	app.Action = func(ctx *cli.Context) error {
-		mcEnable := env.Get("MC_UPDATE", madmin.EnableOn)
-		minioEnable := env.Get("MINIO_UPDATE", madmin.EnableOn)
-
-		if strings.HasPrefix(ReleaseTag, "RELEASE.") && (mcEnable == madmin.EnableOn || minioEnable == madmin.EnableOn) {
-			// Check for new updates from dl.min.io.
-			checkUpdate(ctx)
-		}
-
 		if ctx.Bool("autocompletion") || ctx.GlobalBool("autocompletion") {
 			// Install shell completions
 			installAutoCompletion()
@@ -504,9 +491,11 @@ func registerApp(name string) *cli.App {
 
 	app.Before = registerBefore
 	app.HideHelpCommand = true
-	app.Usage = "MinIO Client for object storage and filesystems."
+	app.Usage = "Kypello Client for object storage and filesystems."
 	app.Commands = appCmds
-	app.Author = "MinIO, Inc."
+	// Kypello maintains kc; MinIO, Inc. wrote the mc it was forked from, and
+	// AGPLv3 section 4 requires that notice to be kept intact.
+	app.Author = "Kypello, and MinIO, Inc. for the mc code this is forked from"
 	app.Version = ReleaseTag
 	app.Flags = append(mcFlags, globalFlags...)
 	app.CustomAppHelpTemplate = mcHelpTemplate
