@@ -30,6 +30,9 @@ jobs:
       - name: "Run zizmor"
         uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
         with:
-          config-file: .github/zizmor.yml
-          sarif-upload: true
+          # `config`, not `config-file`: the action rejected the old name as an
+          # unexpected input, so .github/zizmor.yml was never applied. SARIF
+          # upload needs no input at all - `advanced-security` defaults to true,
+          # and `sarif-upload` was likewise not a real input.
+          config: .github/zizmor.yml
           inputs: .github
