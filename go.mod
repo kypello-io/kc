@@ -36,7 +36,7 @@ require (
 	github.com/rs/xid v1.6.0
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/syncthing/notify v0.0.0-20250528144937-c7027d4f7465
-	github.com/vbauerster/mpb/v8 v8.15.2
+	github.com/vbauerster/mpb/v8 v8.16.0
 	golang.org/x/net v0.58.0
 	golang.org/x/sys v0.47.0
 	golang.org/x/term v0.45.0
