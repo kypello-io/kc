@@ -99,7 +99,7 @@ kc.exe --help
 ## 通过源码安装
 通过源码安装仅适用于开发人员和高级用户。
 
-如果您没有Golang环境，请参照[如何安装Golang](https://golang.org/doc/install)。所需的最低版本见[go.mod](https://github.com/kypello-io/kc/blob/master/go.mod)，当前为go1.26。
+如果您没有Golang环境，请参照[如何安装Golang](https://golang.org/doc/install)。所需的最低版本见[go.mod](https://github.com/kypello-io/kc/blob/master/go.mod)，当前为go1.27.2。
 
 ```sh
 go install github.com/kypello-io/kc@latest

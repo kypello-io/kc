@@ -144,7 +144,7 @@ curl -fsSLO "${BASE}/kc_${VERSION}_linux_amd64.apk" && sudo apk add --allow-untr
 
 ### Install from Source
 
-Source installation is only intended for developers and advanced users. If you do not have a working Golang environment, please follow [How to install Golang](https://golang.org/doc/install). The minimum version required is the one in [go.mod](https://github.com/kypello-io/kc/blob/master/go.mod), currently go1.26.
+Source installation is only intended for developers and advanced users. If you do not have a working Golang environment, please follow [How to install Golang](https://golang.org/doc/install). The minimum version required is the one in [go.mod](https://github.com/kypello-io/kc/blob/master/go.mod), currently go1.27.2.
 
 ```sh
 go install github.com/kypello-io/kc@latest
