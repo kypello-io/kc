@@ -113,6 +113,8 @@ tar xzf "kc_${VERSION}_${PLATFORM}.tar.gz"
 | macOS | Apple Silicon | `darwin_arm64` |
 | FreeBSD | 64-bit Intel | `freebsd_amd64` |
 
+macOS release binaries require macOS 13 or newer. Go 1.27, which builds them, no longer supports macOS 12.
+
 ### Microsoft Windows
 
 Download `kc_<version>_windows_amd64.zip` (or `windows_arm64`) from
@@ -144,7 +146,7 @@ curl -fsSLO "${BASE}/kc_${VERSION}_linux_amd64.apk" && sudo apk add --allow-untr
 
 ### Install from Source
 
-Source installation is only intended for developers and advanced users. If you do not have a working Golang environment, please follow [How to install Golang](https://golang.org/doc/install). The minimum version required is the one in [go.mod](https://github.com/kypello-io/kc/blob/master/go.mod), currently go1.26.
+Source installation is only intended for developers and advanced users. If you do not have a working Golang environment, please follow [How to install Golang](https://golang.org/doc/install). The minimum version required is the one in [go.mod](https://github.com/kypello-io/kc/blob/master/go.mod), currently go1.27.2.
 
 ```sh
 go install github.com/kypello-io/kc@latest

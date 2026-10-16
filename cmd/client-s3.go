@@ -2486,7 +2486,7 @@ func (c *S3Client) SetObjectLockConfig(ctx context.Context, mode minio.Retention
 	if validity > math.MaxUint32 {
 		return probe.NewError(fmt.Errorf("validity '%v' exceeds maximum supported value", validity)).Trace(c.GetURL().String())
 	}
-	vuint := (uint)(validity)
+	vuint := uint(validity)
 	if mode != "" && vuint > 0 && unit != "" {
 		e := c.api.SetBucketObjectLockConfig(ctx, bucket, &mode, &vuint, &unit)
 		if e != nil {
