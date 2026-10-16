@@ -68,6 +68,8 @@ tar xzf "kc_${VERSION}_${PLATFORM}.tar.gz"
 | macOS | Apple Silicon | `darwin_arm64` |
 | FreeBSD | 64-bit Intel | `freebsd_amd64` |
 
+macOS 发布二进制需要 macOS 13 或更高版本。构建它们的 Go 1.27 不再支持 macOS 12。
+
 ### Linux软件包
 
 deb、rpm和apk软件包提供`amd64`、`arm64`、`armv7`、`ppc64le`和`s390x`架构。

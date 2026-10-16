@@ -113,6 +113,8 @@ tar xzf "kc_${VERSION}_${PLATFORM}.tar.gz"
 | macOS | Apple Silicon | `darwin_arm64` |
 | FreeBSD | 64-bit Intel | `freebsd_amd64` |
 
+macOS release binaries require macOS 13 or newer. Go 1.27, which builds them, no longer supports macOS 12.
+
 ### Microsoft Windows
 
 Download `kc_<version>_windows_amd64.zip` (or `windows_arm64`) from

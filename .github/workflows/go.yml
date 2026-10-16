@@ -27,7 +27,7 @@ jobs:
           go-version: "1.27.2"
       - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
         with:
-          version: v2.12.2
+          version: v2.15.0
   build:
     name: Test on Go ${{ matrix.go-version }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -72,7 +72,10 @@ jobs:
           MC_TEST_SKIP_INSECURE: true
           MC_TEST_SKIP_BUILD: true
         run: |
-          wget https://dl.min.io/server/minio/release/linux-amd64/minio && chmod +x minio
+          # dl.min.io/server/minio/release returns 410. Releases after this tag
+          # publish no binaries; it is the last one that still does.
+          curl -fsSL -o minio https://github.com/minio/minio/releases/download/RELEASE.2025-09-07T16-13-09Z/minio.linux-amd64.RELEASE.2025-09-07T16-13-09Z
+          chmod +x minio
           mkdir -p ~/.minio/certs/ && cp testdata/localhost.crt ~/.minio/certs/public.crt && cp testdata/localhost.key ~/.minio/certs/private.key
           sudo cp testdata/localhost.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates
           ./minio server /tmp/test-xl/{1...4}/ & sleep 10
