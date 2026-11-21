@@ -1,6 +1,6 @@
 module github.com/kypello-io/kc
 
-go 1.27.2
+go 1.27.4
 
 require (
 	github.com/charmbracelet/bubbles v1.0.0

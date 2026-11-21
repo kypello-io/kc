@@ -27,7 +27,11 @@ _init() {
 
     ## Minimum required versions for build dependencies
     GIT_VERSION="1.0"
-    GO_VERSION="1.13"
+    GO_VERSION=$(awk '$1 == "go" { print $2; exit }' go.mod)
+    if [[ -z "$GO_VERSION" ]]; then
+        echo "Cannot determine the minimum Go version from go.mod."
+        exit 1
+    fi
     OSX_VERSION="10.8"
     KNAME=$(uname -s)
     ARCH=$(uname -m)
